@@ -7,18 +7,9 @@ import android.opengl.GLES20;
  */
 public class GLGraphics {
 	FatLipSurfaceView glView;
-	GLES20 gl;
 
 	public GLGraphics(FatLipSurfaceView glView) {
 		this.glView = glView;
-	}
-
-	public GLES20 getGL() {
-		return gl;
-	}
-
-	public void setGL(GLES20 gl) {
-		this.gl = gl;
 	}
 
 	public int getWidth() {

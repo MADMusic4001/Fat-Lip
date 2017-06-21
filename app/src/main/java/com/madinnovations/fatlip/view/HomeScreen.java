@@ -2,7 +2,7 @@ package com.madinnovations.fatlip.view;
 
 import android.opengl.GLES20;
 
-import com.madinnovations.fatlip.controller.Game;
+import com.madinnovations.fatlip.controller.framework.Game;
 
 /**
  * Renders the home screen

@@ -15,42 +15,61 @@
  */
 package com.madinnovations.fatlip.view.activities;
 
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.madinnovations.fatlip.controller.Game;
+import com.madinnovations.fatlip.controller.framework.Audio;
+import com.madinnovations.fatlip.controller.framework.FileIO;
+import com.madinnovations.fatlip.controller.framework.Game;
+import com.madinnovations.fatlip.controller.framework.Input;
 import com.madinnovations.fatlip.view.FatLipApp;
-import com.madinnovations.fatlip.view.FatLipRenderer;
 import com.madinnovations.fatlip.view.FatLipSurfaceView;
 import com.madinnovations.fatlip.view.GLGraphics;
-import com.madinnovations.fatlip.view.GLRenderer;
 import com.madinnovations.fatlip.view.HomeScreen;
 import com.madinnovations.fatlip.view.Screen;
 import com.madinnovations.fatlip.view.di.components.ActivityComponent;
 import com.madinnovations.fatlip.view.di.modules.ActivityModule;
+import com.madinnovations.fatlip.view.framework.Graphics;
+import com.madinnovations.fatlip.view.utils.GLGraphicTools;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * The game Activity
  */
-public class FatLipGame extends AppCompatActivity implements Game {
+public class FatLipGame extends AppCompatActivity implements Game, Renderer {
 	private ActivityComponent activityComponent;
-	enum GLGameState {
+	private enum GLGameState {
 		Initialized,
 		Running,
 		Paused,
 		Finished,
 		Idle
 	}
-	FatLipSurfaceView glView;
-	GLGraphics glGraphics;
-	Screen screen;
-	GLRenderer renderer;
-	GLGameState state = GLGameState.Initialized;
-	Object stateChanged = new Object();
-	long startTime = System.nanoTime();
+	private FatLipSurfaceView glView;
+	private GLGraphics glGraphics;
+	private Audio audio;
+	private Input input;
+	private FileIO fileIO;
+	private Screen screen;
+	private GLGameState state = GLGameState.Initialized;
+	private final Object stateChanged = new Object();
+	private long startTime = System.nanoTime();
+	private boolean firstDraw;
+	private boolean surfaceCreated;
+	private int width;
+	private int height;
+	private long lastTime;
+	private int fps;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,9 +83,15 @@ public class FatLipGame extends AppCompatActivity implements Game {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+		firstDraw = true;
+		surfaceCreated = false;
+		width = -1;
+		height = -1;
+		lastTime = System.currentTimeMillis();
+		fps = 0;
+
 		glView = new FatLipSurfaceView(this);
-		renderer = new FatLipRenderer(this);
-		glView.setRenderer(renderer);
+		glView.setRenderer(this);
 		setContentView(glView);
 		glGraphics = new GLGraphics(glView);
 
@@ -79,8 +104,73 @@ public class FatLipGame extends AppCompatActivity implements Game {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
-	public ActivityComponent getActivityComponent() {
-		return activityComponent;
+	@Override
+	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+		Log.i(TAG, "onSurfaceCreated: Surface created.");
+		surfaceCreated = true;
+		width = -1;
+		height = -1;
+		// Text shader
+		int vshadert = GLGraphicTools.loadShader(GLES20.GL_VERTEX_SHADER,
+												 GLGraphicTools.vs_Text);
+		int fshadert = GLGraphicTools.loadShader(GLES20.GL_FRAGMENT_SHADER,
+												 GLGraphicTools.fs_Text);
+
+		GLGraphicTools.sp_Text = GLES20.glCreateProgram();
+		GLES20.glAttachShader(GLGraphicTools.sp_Text, vshadert);
+		GLES20.glAttachShader(GLGraphicTools.sp_Text, fshadert);
+		GLES20.glLinkProgram(GLGraphicTools.sp_Text);
+	}
+
+	@Override
+	public void onSurfaceChanged(GL10 unused, int width, int height) {
+		if (!surfaceCreated && width == this.width
+				&& height == this.height) {
+			Log.i(TAG, "onSurfaceChanged: Surface changed but already handled.");
+			return;
+		}
+		// Android honeycomb has an option to keep the
+		// context.
+		String msg = "Surface changed width:" + width
+				+ " height:" + height;
+		if (surfaceCreated) {
+			msg += " context lost.";
+		} else {
+			msg += ".";
+		}
+		Log.i(TAG, "onSurfaceChanged: " + msg);
+
+		this.width = width;
+		this.height = height;
+
+		screen.onCreate(this.width, this.height, surfaceCreated);
+		surfaceCreated = false;
+	}
+
+	@Override
+	public void onDrawFrame(GL10 unused) {
+
+	}
+
+	@Override
+	protected void onPause() {
+		synchronized (stateChanged) {
+			if(isFinishing()) {
+				state = GLGameState.Finished;
+			}
+			else {
+				state = GLGameState.Paused;
+			}
+			while (true) {
+				try {
+					stateChanged.wait();
+					break;
+				}
+				catch (InterruptedException ignored) {}
+			}
+		}
+		glView.onPause();
+		super.onPause();
 	}
 
 	@Override
@@ -100,5 +190,33 @@ public class FatLipGame extends AppCompatActivity implements Game {
 	public Screen getStartScreen() {
 		screen = new HomeScreen(this);
 		return screen;
+	}
+
+	public GLGraphics getGLGraphics() {
+		return glGraphics;
+	}
+
+	@Override
+	public Input getInput() {
+		return input;
+	}
+
+	@Override
+	public FileIO getFileIO() {
+		return fileIO;
+	}
+
+	@Override
+	public Graphics getGraphics() {
+		throw new IllegalStateException("We are using OpenGL!");
+	}
+
+	@Override
+	public Audio getAudio() {
+		return audio;
+	}
+
+	public ActivityComponent getActivityComponent() {
+		return activityComponent;
 	}
 }

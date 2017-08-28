@@ -16,7 +16,6 @@
 package com.madinnovations.fatlip.view.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.madinnovations.fatlip.controller.framework.impl.GLGame;
 import com.madinnovations.fatlip.model.Assets;
@@ -26,20 +25,23 @@ import com.madinnovations.fatlip.view.di.modules.ActivityModule;
 import com.madinnovations.fatlip.view.framework.Screen;
 import com.madinnovations.fatlip.view.screens.HomeScreen;
 
+import javax.inject.Inject;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
  * The game Activity
  */
+@SuppressWarnings("unused")
 public class FatLipGame extends GLGame {
 	private static final String TAG = "FatLipGame";
 	private ActivityComponent activityComponent;
 	private boolean firstTimeCreate = true;
+	@Inject
+	protected HomeScreen homeScreen;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate: ");
 		super.onCreate(savedInstanceState);
 		activityComponent = ((FatLipApp) getApplication()).getApplicationComponent()
 				.newActivityComponent(new ActivityModule(this));
@@ -48,13 +50,11 @@ public class FatLipGame extends GLGame {
 
 	@Override
 	public Screen getStartScreen() {
-		Log.d(TAG, "getStartScreen: ");
-		return new HomeScreen(this);
+		return homeScreen;
 	}
 
 	@Override
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-		Log.d(TAG, "onSurfaceCreated: ");
 		super.onSurfaceCreated(unused, config);
 		if(firstTimeCreate) {
 			Assets.load(this);
@@ -65,7 +65,6 @@ public class FatLipGame extends GLGame {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public ActivityComponent getActivityComponent() {
 		return activityComponent;
 	}

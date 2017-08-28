@@ -16,32 +16,29 @@
  *
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.madinnovations.fatlip.view.di.modules;
 
-buildscript {
-	repositories {
-		jcenter()
-		maven {
-			url "https://maven.google.com"
-		}
+import android.media.SoundPool;
+
+import com.madinnovations.fatlip.model.framework.Sound;
+import com.madinnovations.fatlip.model.framework.impl.AndroidSound;
+
+import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
+
+/**
+ * ${CLASS_DESCRIPTION}
+ *
+ * @author Mark
+ *         Created 6/24/2017.
+ */
+@Module
+public class ResourceModule {
+	@Singleton
+	@Provides
+	Sound provideSound(SoundPool soundPool, int id) {
+		return new AndroidSound(soundPool, id);
 	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:3.0.0-beta3'
-
-		// NOTE: Do not place your application dependencies here; they belong
-		// in the individual module build.gradle files
-	}
-}
-
-allprojects {
-	repositories {
-		jcenter()
-		maven {
-			url "https://maven.google.com"
-		}
-	}
-}
-
-task clean(type: Delete) {
-	delete rootProject.buildDir
 }

@@ -15,33 +15,25 @@
  *   limitations under the License.
  *
  */
+package com.madinnovations.fatlip.model.framework.impl;
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+import android.graphics.Point;
 
-buildscript {
-	repositories {
-		jcenter()
-		maven {
-			url "https://maven.google.com"
-		}
+import com.madinnovations.fatlip.model.framework.Rect;
+import com.madinnovations.fatlip.model.framework.Size;
+import com.madinnovations.fatlip.model.framework.TextureAtlas;
+
+import java.util.Collection;
+
+/**
+ * TextureAtlas implementation that reads the sprite layout information from a JSON file.
+ */
+public class TextureAtlasJsonImpl implements TextureAtlas {
+	private Collection<Frame> frames;
+	private Meta meta;
+
+	@Override
+	public void load(String fileName) {
+
 	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:3.0.0-beta3'
-
-		// NOTE: Do not place your application dependencies here; they belong
-		// in the individual module build.gradle files
-	}
-}
-
-allprojects {
-	repositories {
-		jcenter()
-		maven {
-			url "https://maven.google.com"
-		}
-	}
-}
-
-task clean(type: Delete) {
-	delete rootProject.buildDir
 }

@@ -15,7 +15,6 @@
  *   limitations under the License.
  *
  */
-
 package com.madinnovations.fatlip.view.framework;
 
 import android.opengl.GLES20;

@@ -22,9 +22,7 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -39,6 +37,7 @@ import com.madinnovations.fatlip.view.framework.impl.GLGraphics;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+@SuppressWarnings("unused")
 public abstract class GLGame extends Activity implements Game, Renderer {
 	private static final String TAG = "GLGame";
 	private enum GLGameState {
@@ -58,9 +57,8 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 	private final Object stateChanged = new Object();
 	private long startTime = System.nanoTime();
 
-    @Override 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "onCreate: ");
 		super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -80,14 +78,12 @@ public abstract class GLGame extends Activity implements Game, Renderer {
     
     @Override
     public void onResume() {
-		Log.d(TAG, "onResume: ");
 		super.onResume();
         glView.onResume();
     }
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-		Log.d(TAG, "onSurfaceCreated: ");
 		synchronized(stateChanged) {
             if(state == GLGameState.Initialized) {
 				screen = getStartScreen();
@@ -100,7 +96,6 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 
 	@Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
-		Log.d(TAG, "onSurfaceChanged: ");
 		if(screen != null) {
 			screen.onCreate(width, height, true);
 		}
@@ -141,7 +136,6 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 
     @Override 
     public void onPause() {
-		Log.d(TAG, "onPause: ");
 		synchronized(stateChanged) {
             if(isFinishing())            
                 state = GLGameState.Finished;
@@ -160,7 +154,6 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         super.onPause();
     }
 
-    @SuppressWarnings("unused")
 	public GLGraphics getGLGraphics() {
         return glGraphics;
     }
@@ -178,26 +171,17 @@ public abstract class GLGame extends Activity implements Game, Renderer {
     }
 
     public void setScreen(Screen newScreen) {
-		Log.d(TAG, "setScreen: ");
 		if (newScreen == null) {
 			throw new IllegalArgumentException("Screen must not be null");
 		}
-        this.screen.pause();
-        this.screen.dispose();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Point size = new Point();
-            getWindow().getWindowManager().getDefaultDisplay().getSize(size);
-            newScreen.onCreate(size.x, size.y, true);
-        }
-        else {
-			//noinspection deprecation
-			newScreen.onCreate(getWindow().getWindowManager().getDefaultDisplay().getWidth(),
-                               getWindow().getWindowManager().getDefaultDisplay().getHeight(),
-                               true);
-        }
+        screen.pause();
+        screen.dispose();
+		Point size = new Point();
+		getWindow().getWindowManager().getDefaultDisplay().getSize(size);
+		newScreen.onCreate(size.x, size.y, true);
         newScreen.resume();
         newScreen.update(0);
-        this.screen = newScreen;
+        screen = newScreen;
     }
 
     public Screen getCurrentScreen() {

@@ -18,14 +18,16 @@
 
 package com.madinnovations.fatlip.view.screens;
 
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.madinnovations.fatlip.controller.framework.Game;
+import com.android.texample2.GLText;
 import com.madinnovations.fatlip.model.Assets;
+import com.madinnovations.fatlip.view.activities.FatLipGame;
 import com.madinnovations.fatlip.view.framework.GLGraphicTools;
 import com.madinnovations.fatlip.view.framework.Screen;
 
@@ -34,15 +36,17 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import javax.inject.Inject;
+
 /**
  * Renders the home screen
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class HomeScreen extends Screen {
+	@Inject
+	protected AssetManager assetManager;
 	private static final String TAG = "HomeScreen";
-	// Geometric variables
-	private static float vertices[];
 	private static short indices[];
-	private static float uvs[];
 	private FloatBuffer  vertexBuffer;
 	private ShortBuffer  drawListBuffer;
 	private FloatBuffer  uvBuffer;
@@ -50,19 +54,21 @@ public class HomeScreen extends Screen {
 	private final float[] mtrxProjection = new float[16];
 	private final float[] mtrxView = new float[16];
 	private final float[] mtrxProjectionAndView = new float[16];
-	private int mScreenWidth;
-	private int mScreenHeight;
+	private int    screenWidth;
+	private int    screenHeight;
+	private GLText glText;
 
-	public HomeScreen(Game game) {
+	@Inject
+	public HomeScreen(FatLipGame game) {
 		super(game);
 	}
 
 	@Override
 	public void onCreate(int width, int height, boolean contextLost) {
-		Log.d(TAG, "onCreate: ");
+		Log.d(TAG, "onCreate: assetManager = " + assetManager);
 		// We need to know the current width and height.
-		mScreenWidth = width;
-		mScreenHeight = height;
+		screenWidth = width;
+		screenHeight = height;
 
 		// Create the triangles
 		SetupTriangle();
@@ -98,7 +104,7 @@ public class HomeScreen extends Screen {
 		GLES20.glUseProgram(GLGraphicTools.sp_Image);
 
 		// Redo the Viewport, making it fullscreen.
-		GLES20.glViewport(0, 0, (int)mScreenWidth, (int)mScreenHeight);
+		GLES20.glViewport(0, 0, screenWidth, screenHeight);
 
 		// Clear our matrices
 		for(int i=0;i<16;i++)
@@ -109,13 +115,21 @@ public class HomeScreen extends Screen {
 		}
 
 		// Setup our screen width and height for normal sprite translation.
-		Matrix.orthoM(mtrxProjection, 0, 0f, mScreenWidth, 0.0f, mScreenHeight, 0, 50);
+		Matrix.orthoM(mtrxProjection, 0, 0f, screenWidth, 0.0f, screenHeight, 0, 50);
 
 		// Set the camera position (View matrix)
-		Matrix.setLookAtM(mtrxView, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+		Matrix.setLookAtM(mtrxView, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1.0f,
+						  0.0f);
 
 		// Calculate the projection and view transformation
 		Matrix.multiplyMM(mtrxProjectionAndView, 0, mtrxProjection, 0, mtrxView, 0);
+
+		glText = new GLText(assetManager);
+		glText.load("Roboto-Regular.ttf", 72, 2, 2 );  // Create Font (Height: 14 Pixels / X+Y Padding 2 Pixels))
+
+		// enable texture + alpha blending
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	@Override
@@ -135,9 +149,7 @@ public class HomeScreen extends Screen {
 		GLES20.glEnableVertexAttribArray(mPositionHandle);
 
 		// Prepare the triangle coordinate data
-		GLES20.glVertexAttribPointer(mPositionHandle, 3,
-									 GLES20.GL_FLOAT, false,
-									 0, vertexBuffer);
+		GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer);
 
 		// Get handle to texture coordinates location
 		int mTexCoordLoc = GLES20.glGetAttribLocation(GLGraphicTools.sp_Image, "a_texCoord" );
@@ -146,9 +158,7 @@ public class HomeScreen extends Screen {
 		GLES20.glEnableVertexAttribArray ( mTexCoordLoc );
 
 		// Prepare the texturecoordinates
-		GLES20.glVertexAttribPointer ( mTexCoordLoc, 2, GLES20.GL_FLOAT,
-									   false,
-									   0, uvBuffer);
+		GLES20.glVertexAttribPointer ( mTexCoordLoc, 2, GLES20.GL_FLOAT, false, 0, uvBuffer);
 
 		// Get handle to shape's transformation matrix
 		int mtrxhandle = GLES20.glGetUniformLocation(GLGraphicTools.sp_Image, "uMVPMatrix");
@@ -157,8 +167,7 @@ public class HomeScreen extends Screen {
 		GLES20.glUniformMatrix4fv(mtrxhandle, 1, false, mtrxProjectionAndView, 0);
 
 		// Get handle to textures locations
-		int mSamplerLoc = GLES20.glGetUniformLocation (GLGraphicTools.sp_Image,
-													   "s_texture" );
+		int mSamplerLoc = GLES20.glGetUniformLocation (GLGraphicTools.sp_Image, "s_texture" );
 
 		// Set the sampler texture unit to 0, where we have saved the texture.
 		GLES20.glUniform1i ( mSamplerLoc, 0);
@@ -170,32 +179,30 @@ public class HomeScreen extends Screen {
 		// Disable vertex array
 		GLES20.glDisableVertexAttribArray(mPositionHandle);
 		GLES20.glDisableVertexAttribArray(mTexCoordLoc);
+
+		glText.begin(1.0f, 0.0f, 0.0f, 1.0f, mtrxProjectionAndView);
+		glText.drawC("Test text", 800.0f, 1024.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+		glText.end();
 	}
 
 	@Override
-	public void pause() {
-		Log.d(TAG, "pause: ");
-	}
+	public void pause() {}
 
 	@Override
 	public void resume() {
-		Log.d(TAG, "resume: ");
 		GLES20.glClearColor(0f, 1f, 0f, 1f);
 	}
 
 	@Override
-	public void dispose() {
-		Log.d(TAG, "dispose: ");
-	}
+	public void dispose() {}
 
 	private void SetupTriangle() {
-		Log.d(TAG, "SetupTriangle: ");
 		// We have create the vertices of our view.
-		vertices = new float[] {
-				0.0f, (float)mScreenHeight, 0.0f,
+		float[] vertices = new float[]{
+				0.0f, (float) screenHeight, 0.0f,
 				0.0f, 0.0f, 0.0f,
-				(float)mScreenWidth, 0.0f, 0.0f,
-				(float)mScreenWidth, (float)mScreenHeight, 0.0f };
+				(float) screenWidth, 0.0f, 0.0f,
+				(float) screenWidth, (float) screenHeight, 0.0f};
 
 		indices = new short[] {0, 1, 2, 0, 2, 3};
 
@@ -215,9 +222,8 @@ public class HomeScreen extends Screen {
 	}
 
 	private void SetupImage() {
-		Log.d(TAG, "SetupImage: ");
 		// Create our UV coordinates.
-		uvs = new float[] {
+		float[] uvs = new float[]{
 				0.0f, 0.0f,
 				0.0f, 1.0f,
 				1.0f, 1.0f,

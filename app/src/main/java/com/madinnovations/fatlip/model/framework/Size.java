@@ -16,32 +16,26 @@
  *
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package com.madinnovations.fatlip.model.framework;
 
-buildscript {
-	repositories {
-		jcenter()
-		maven {
-			url "https://maven.google.com"
-		}
+/**
+ * Class representing the size of a graphic resource
+ */
+public class Size {
+	private int w;
+	private int h;
+
+	// Getters and setters
+	public int getW() {
+		return w;
 	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:3.0.0-beta3'
-
-		// NOTE: Do not place your application dependencies here; they belong
-		// in the individual module build.gradle files
+	public void setW(int w) {
+		this.w = w;
 	}
-}
-
-allprojects {
-	repositories {
-		jcenter()
-		maven {
-			url "https://maven.google.com"
-		}
+	public int getH() {
+		return h;
 	}
-}
-
-task clean(type: Delete) {
-	delete rootProject.buildDir
+	public void setH(int h) {
+		this.h = h;
+	}
 }

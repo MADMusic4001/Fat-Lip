@@ -18,6 +18,7 @@ package com.madinnovations.fatlip.view.di.modules;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 
 import com.madinnovations.fatlip.view.FatLipApp;
 
@@ -30,6 +31,7 @@ import dagger.Provides;
 /**
  * Provides application level class instances for dependency injection.
  */
+@SuppressWarnings("unused")
 @Module
 public class ApplicationModule {
 	private static final String PREFS_DEFAULT = "rmuapp";
@@ -80,11 +82,22 @@ public class ApplicationModule {
 	/**
 	 * The {@link SharedPreferences} for the application.
 	 *
-	 * @param app the {@link Application} whose {@link SharedPreferences} is being requested.
+	 * @param app the {@link Application} whose {@link SharedPreferences} is being requested
 	 * @return a SharedPreferences instance.
 	 */
 	@Provides @Singleton
 	SharedPreferences provideSharedPrefs(Application app) {
 		return app.getSharedPreferences(PREFS_DEFAULT, Context.MODE_PRIVATE);
+	}
+
+	/**
+	 * The {@link AssetManager} for the application.
+	 *
+	 * @param app  the {@link Application} whose {@link AssetManager} is being requested
+	 * @return an {@link AssetManager} instance.
+	 */
+	@Provides @Singleton
+	AssetManager provideAssetManager(Application app) {
+		return app.getAssets();
 	}
 }

@@ -57,6 +57,7 @@ public class HomeScreen extends Screen {
 	private int    screenWidth;
 	private int    screenHeight;
 	private GLText glText;
+	int[] textureNames;
 
 	@Inject
 	public HomeScreen(FatLipGame game) {
@@ -100,7 +101,7 @@ public class HomeScreen extends Screen {
 		GLES20.glAttachShader(GLGraphicTools.sp_Image, fragmentShader);
 		GLES20.glLinkProgram(GLGraphicTools.sp_Image);
 
-		// Set our shader programm
+		// Set our shader program
 		GLES20.glUseProgram(GLGraphicTools.sp_Image);
 
 		// Redo the Viewport, making it fullscreen.
@@ -125,11 +126,8 @@ public class HomeScreen extends Screen {
 		Matrix.multiplyMM(mtrxProjectionAndView, 0, mtrxProjection, 0, mtrxView, 0);
 
 		glText = new GLText(assetManager);
-		glText.load("Roboto-Regular.ttf", 72, 2, 2 );  // Create Font (Height: 14 Pixels / X+Y Padding 2 Pixels))
-
-		// enable texture + alpha blending
-		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		glText.load("Roboto-Regular.ttf", 72, 2, 2, textureNames[1] );  // Create Font (Height: 14 Pixels / X+Y Padding 2
+		// Pixels))
 	}
 
 	@Override
@@ -180,7 +178,11 @@ public class HomeScreen extends Screen {
 		GLES20.glDisableVertexAttribArray(mPositionHandle);
 		GLES20.glDisableVertexAttribArray(mTexCoordLoc);
 
+		// enable texture + alpha blending
 		glText.begin(1.0f, 0.0f, 0.0f, 1.0f, mtrxProjectionAndView);
+		// enable texture + alpha blending
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		glText.drawC("Test text", 800.0f, 1024.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		glText.end();
 	}
@@ -238,15 +240,15 @@ public class HomeScreen extends Screen {
 		uvBuffer.position(0);
 
 		// Generate Textures, if more needed, alter these numbers.
-		int[] texturenames = new int[1];
-		GLES20.glGenTextures(1, texturenames, 0);
+		textureNames = new int[2];
+		GLES20.glGenTextures(2, textureNames, 0);
 
 		// Temporary create a bitmap
 		Bitmap bmp = Assets.homeScreenBitmap;
 
-		// Bind texture to texturename
+		// Bind texture to textureName
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texturenames[0]);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureNames[0]);
 
 		// Set filtering
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,

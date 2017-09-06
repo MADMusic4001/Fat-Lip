@@ -20,6 +20,7 @@ package com.madinnovations.fatlip.view.di.components;
 
 import com.madinnovations.fatlip.view.di.modules.ApplicationModule;
 import com.madinnovations.fatlip.view.screens.HomeScreen;
+import com.madinnovations.fatlip.view.screens.LoadingScreen;
 
 import javax.inject.Singleton;
 
@@ -32,4 +33,5 @@ import dagger.Component;
 @Component(modules = ApplicationModule.class)
 public interface ScreenComponent {
 	void injectInto(HomeScreen homeScreen);
+	void injectInto(LoadingScreen loadingScreen);
 }

@@ -35,8 +35,8 @@ public class GLText {
 	public final static int FONT_SIZE_MAX = 180;       // Maximum Font Size (Pixels)
 
 	public final static int CHAR_BATCH_SIZE = 24;     // Number of Characters to Render Per Batch
-													  // must be the same as the size of u_MVPMatrix 
-													  // in BatchTextProgram
+	// must be the same as the size of u_MVPMatrix
+	// in BatchTextProgram
 	private static final String TAG = "GLTEXT";
 
 	//--Members--//
@@ -62,9 +62,9 @@ public class GLText {
 
 	float scaleX, scaleY;                              // Font Scale (X,Y Axis)
 	float spaceX;                                      // Additional (X,Y Axis) Spacing (Unscaled)
-	
+
 	private Program mProgram; 						   // OpenGL Program object
-	private int mColorHandle;						   // Shader color handle	
+	private int mColorHandle;						   // Shader color handle
 	private int mTextureUniformHandle;                 // Shader texture handle
 
 
@@ -76,7 +76,7 @@ public class GLText {
 			program.init();
 		}
 		this.assets = assets;                           // Save the Asset Manager Instance
-		
+
 		batch = new SpriteBatch(CHAR_BATCH_SIZE, program );  // Create Sprite Batch (with Defined Size)
 
 		charWidths = new float[CHAR_CNT];               // Create the Array of Character Widths
@@ -106,11 +106,11 @@ public class GLText {
 		spaceX = 0.0f;
 
 		// Initialize the color and texture handles
-		mProgram = program; 
+		mProgram = program;
 		mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
-        mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Texture");
+		mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Texture");
 	}
-	
+
 	// Constructor using the default program (BatchTextProgram)
 	public GLText(AssetManager assets) {
 		this(null, assets);
@@ -250,23 +250,23 @@ public class GLText {
 		initDraw(red, green, blue, alpha);
 		batch.beginBatch(vpMatrix);                             // Begin Batch
 	}
-	
+
 	void initDraw(float red, float green, float blue, float alpha) {
 		GLES20.glUseProgram(mProgram.getHandle()); // specify the program to use
-		
+
 		// set color TODO: only alpha component works, text is always black #BUG
-		float[] color = {red, green, blue, alpha}; 
-		GLES20.glUniform4fv(mColorHandle, 1, color , 0); 
+		float[] color = {red, green, blue, alpha};
+		GLES20.glUniform4fv(mColorHandle, 1, color , 0);
 		GLES20.glEnableVertexAttribArray(mColorHandle);
-		
+
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + 1);  // Set the active texture unit to texture unit 0
-		
+
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId); // Bind the texture to this unit
-		
+
 		// Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0
-		GLES20.glUniform1i(mTextureUniformHandle, 0); 
+		GLES20.glUniform1i(mTextureUniformHandle, 0);
 	}
-	
+
 	public void end()  {
 		batch.endBatch();                               // End Batch
 		GLES20.glDisableVertexAttribArray(mColorHandle);
@@ -284,7 +284,7 @@ public class GLText {
 		int len = text.length();                        // Get String Length
 		x += ( chrWidth / 2.0f ) - ( fontPadX * scaleX );  // Adjust Start X
 		y += ( chrHeight / 2.0f ) - ( fontPadY * scaleY );  // Adjust Start Y
-		
+
 		// create a model matrix based on x, y and angleDeg
 		float[] modelMatrix = new float[16];
 		Matrix.setIdentityM(modelMatrix, 0);
@@ -292,10 +292,10 @@ public class GLText {
 		Matrix.rotateM(modelMatrix, 0, angleDegZ, 0, 0, 1);
 		Matrix.rotateM(modelMatrix, 0, angleDegX, 1, 0, 0);
 		Matrix.rotateM(modelMatrix, 0, angleDegY, 0, 1, 0);
-		
-		float letterX, letterY; 
+
+		float letterX, letterY;
 		letterX = letterY = 0;
-		
+
 		for (int i = 0; i < len; i++)  {              // FOR Each Character in String
 			int c = (int)text.charAt(i) - CHAR_START;  // Calculate Character Index (Offset by First Char in Font)
 			if (c < 0 || c >= CHAR_CNT)                // IF Character Not In Font
@@ -311,7 +311,7 @@ public class GLText {
 	public void draw(String text, float x, float y, float angleDeg) {
 		draw(text, x, y, 0, angleDeg);
 	}
-	
+
 	public void draw(String text, float x, float y) {
 		draw(text, x, y, 0, 0);
 	}
@@ -336,7 +336,7 @@ public class GLText {
 	public float drawC(String text, float x, float y) {
 		float len = getLength( text );                  // Get Text Length
 		return drawC(text, x - (len / 2.0f), y - ( getCharHeight() / 2.0f ), 0);
-		
+
 	}
 	public float drawCX(String text, float x, float y)  {
 		float len = getLength( text );                  // Get Text Length
@@ -444,8 +444,8 @@ public class GLText {
 		batch.beginBatch(vpMatrix);                  // Begin Batch (Bind Texture)
 		float[] idMatrix = new float[16];
 		Matrix.setIdentityM(idMatrix, 0);
-		batch.drawSprite(width - (textureSize / 2), height - ( textureSize / 2 ), 
-				textureSize, textureSize, textureRgn, idMatrix);  // Draw
+		batch.drawSprite(width - (textureSize / 2), height - ( textureSize / 2 ),
+						 textureSize, textureSize, textureRgn, idMatrix);  // Draw
 		batch.endBatch();                               // End Batch
 	}
 }

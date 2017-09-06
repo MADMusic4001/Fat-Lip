@@ -9,16 +9,20 @@ import com.madinnovations.fatlip.model.framework.Sound;
 
 import java.io.IOException;
 
+/**
+ * Manages the audio and graphical assets for the game.
+ */
 public class Assets {
 	private static final String TAG = "Assets";
-	public static Bitmap homeScreenBitmap;
+	public static Bitmap splashScreenBitmap;
+	public static Sound  click;
 
-    public static void load(GLGame game) {
+    public static void loadSplashScreen(GLGame game) {
 		try {
-			homeScreenBitmap = BitmapFactory.decodeStream(game.getFileIO().readAsset("fatlip.png"));
+			Assets.splashScreenBitmap = BitmapFactory.decodeStream(game.getFileIO().readAsset("fatlip.png"));
 		}
 		catch (IOException e) {
-			Log.e(TAG, "load: Exception caught loading assets", e);
+			Log.e(TAG, "load: Exception caught loading splash screen", e);
 		}
     }
 

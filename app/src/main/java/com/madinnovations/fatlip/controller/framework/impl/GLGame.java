@@ -101,21 +101,22 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 		}
 	}
 
+	@Override
     public void onDrawFrame(GL10 unused) {
 		GLGameState state;
-        
+
         synchronized(stateChanged) {
             state = this.state;
         }
-        
+
         if(state == GLGameState.Running) {
-            float deltaTime = (System.nanoTime()-startTime) / 1000000000.0f;
-            startTime = System.nanoTime();
-            
+        	long currentTime = System.nanoTime();
+            float deltaTime = (currentTime-startTime) / 1000000000.0f;
+            startTime = currentTime;
             screen.update(deltaTime);
             screen.present(deltaTime);
         }
-        
+
         if(state == GLGameState.Paused) {
             screen.pause();            
             synchronized(stateChanged) {
@@ -123,7 +124,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
                 stateChanged.notifyAll();
             }
         }
-        
+
         if(state == GLGameState.Finished) {
             screen.pause();
             screen.dispose();

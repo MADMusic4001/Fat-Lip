@@ -34,7 +34,7 @@ public class ActivityModule {
 	}
 
 	@Provides @PerActivity
-	FatLipGame provideFatLipActivity() {
+	FatLipGame provideFatLipGame() {
 		return this.fatLipGame;
 	}
 }

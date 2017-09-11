@@ -25,6 +25,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.util.Log;
 
 import com.madinnovations.fatlip.model.framework.Audio;
 import com.madinnovations.fatlip.model.framework.Music;
@@ -34,7 +35,8 @@ import java.io.IOException;
 
 @SuppressWarnings("WeakerAccess")
 public class AndroidAudio implements Audio {
-    private AssetManager assets;
+	private static final String TAG = "AndroidAudio";
+	private AssetManager assets;
     private SoundPool    soundPool;
 
     public AndroidAudio(Activity activity) {
@@ -70,7 +72,8 @@ public class AndroidAudio implements Audio {
             int soundId = soundPool.load(assetDescriptor, 0);
             return new AndroidSound(soundPool, soundId);
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't load sound '" + filename + "'");
+			Log.e(TAG, "newSound: ", e);
+			throw new RuntimeException("Couldn't load sound '" + filename + "'");
         }
     }
 }

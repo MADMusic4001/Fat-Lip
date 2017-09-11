@@ -23,8 +23,10 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
+import com.madinnovations.fatlip.controller.framework.Input;
 import com.madinnovations.fatlip.controller.framework.Settings;
 import com.madinnovations.fatlip.model.Assets;
+import com.madinnovations.fatlip.model.framework.FramesPerSecondLogger;
 import com.madinnovations.fatlip.view.activities.FatLipGame;
 import com.madinnovations.fatlip.view.framework.GLGraphicTools;
 import com.madinnovations.fatlip.view.framework.Screen;
@@ -33,12 +35,12 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-
-import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Renders a splash screen while loading the game assets
  */
+@SuppressWarnings("unused")
 public class LoadingScreen extends Screen {
 	private static final String TAG = "LoadingScreen";
 	private static short       indices[];
@@ -51,6 +53,8 @@ public class LoadingScreen extends Screen {
 	private final float[] mtrxProjectionAndView = new float[16];
 	private int    screenWidth;
 	private int    screenHeight;
+	private boolean loaded = false;
+	private FramesPerSecondLogger fpsLogger = new FramesPerSecondLogger();
 
 	/**
 	 * Creates a new LoadingScreen instance
@@ -125,13 +129,27 @@ public class LoadingScreen extends Screen {
 
 	@Override
 	public void update(float deltaTime) {
-		Assets.click = game.getAudio().newSound("click.ogg");
-		Settings.load(game.getFileIO());
-		game.setScreen(new HomeScreen((FatLipGame) game));
+		synchronized (this) {
+			if (!loaded) {
+				Assets.click = game.getAudio().newSound("click.ogg");
+				Settings.load(game.getFileIO());
+				loaded = true;
+			}
+		}
+		List<Input.TouchEvent> touchEvents = game.getInput().getTouchEvents();
+		game.getInput().getKeyEvents();
+		int len = touchEvents.size();
+		for(int i = 0; i < len; i++) {
+			Input.TouchEvent event = touchEvents.get(i);
+			if(event.type == Input.TouchEvent.TOUCH_UP) {
+				game.setScreen(new HomeScreen((FatLipGame) game));
+			}
+		}
 	}
 
 	@Override
 	public void present(float deltaTime) {
+		fpsLogger.logFrame();
 		// clear Screen and Depth Buffer,
 		// we have set the clear color as black.
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);

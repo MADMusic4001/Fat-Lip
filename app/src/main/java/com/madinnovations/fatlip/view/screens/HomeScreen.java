@@ -104,7 +104,6 @@ public class HomeScreen extends Screen {
 
 	@Override
 	public void present(float deltaTime) {
-		Log.d(TAG, "present: deltaTime = " + deltaTime);
 		// enable texture + alpha blending
 		glText.begin(1.0f, 0.0f, 0.0f, 1.0f, mtrxProjectionAndView);
 		// enable texture + alpha blending

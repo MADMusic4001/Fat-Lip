@@ -116,15 +116,19 @@ public class GLText {
 		this(null, assets);
 	}
 
-	//--Load Font--//
-	// description
-	//    this will load the specified font file, create a texture for the defined
-	//    character range, and setup all required values used to render with it.
-	// arguments:
-	//    file - Filename of the font (.ttf, .otf) to use. In 'Assets' folder.
-	//    size - Requested pixel size of font (height)
-	//    padX, padY - Extra padding per character (X+Y Axis); to prevent overlapping characters.
-	public boolean load(String file, int size, int padX, int padY, int textureId) {
+	/**
+	 * This will load the specified font file, create a texture for the defined character range, and setup all required values
+	 * used to render with it.
+	 *
+	 * @param file  Filename of the font (.ttf, .otf) to use. In 'Assets' folder.
+	 * @param size  Requested pixel size of font (height)
+	 * @param color  Requested color of font
+	 * @param padX  Extra padding per character (X Axis); to prevent overlapping characters
+	 * @param padY  Extra padding per character (Y Axis); to prevent overlapping characters
+	 * @param textureId  id of the texture unit to use
+	 * @return true if successful, otherwise false
+	 */
+	public boolean load(String file, int size, int color, int padX, int padY, int textureId) {
 
 		// setup requested values
 		fontPadX = padX;                                // Set Requested X Axis Padding
@@ -135,7 +139,7 @@ public class GLText {
 		Paint paint = new Paint();                      // Create Android Paint Instance
 		paint.setAntiAlias( true );                     // Enable Anti Alias
 		paint.setTextSize( size );                      // Set Text Size
-		paint.setColor( 0xffffffff );                   // Set ARGB (White, Opaque)
+		paint.setColor( color );                   // Set ARGB (White, Opaque)
 		paint.setTypeface( tf );                        // Set Typeface
 
 		// get font metrics

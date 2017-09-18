@@ -58,8 +58,10 @@ public class HomeScreen extends Screen {
 
 	@Override
 	public void onCreate(int width, int height, boolean contextLost) {
+		screenWidth = width;
+		screenHeight = height;
 		glText = new GLText(((FatLipGame)game).getAssets());
-		glText.load("Roboto-Regular.ttf", 72, 2, 2, 0);
+		glText.load("Roboto-Regular.ttf", 72, 0xffff0000, 2, 2, 0);
 		float textWidth = glText.getLength("Play");
 		float textHeight = glText.getHeight();
 		playRect.left = screenWidth/2 - textWidth/2;
@@ -75,13 +77,14 @@ public class HomeScreen extends Screen {
 
 	@Override
 	public void update(float deltaTime) {
-		Log.d(TAG, "update: deltaTime = " + deltaTime);
 		List<Input.TouchEvent> touchEvents = game.getInput().getTouchEvents();
 		game.getInput().getKeyEvents();
 		int len = touchEvents.size();
 		for(int i = 0; i < len; i++) {
 			Input.TouchEvent event = touchEvents.get(i);
 			if(event.type == Input.TouchEvent.TOUCH_UP) {
+				Log.d(TAG, "update: x,y = " + event.x + "," + event.y);
+				Log.d(TAG, "update: playRect = " + playRect);
 				if(inBounds(event, playRect)) {
 					game.setScreen(new GameScreen(game));
 					if(Settings.soundEnabled) {
@@ -104,6 +107,10 @@ public class HomeScreen extends Screen {
 
 	@Override
 	public void present(float deltaTime) {
+		// clear Screen and Depth Buffer,
+		// we have set the clear color as black.
+		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 		// enable texture + alpha blending
 		glText.begin(1.0f, 0.0f, 0.0f, 1.0f, mtrxProjectionAndView);
 		// enable texture + alpha blending

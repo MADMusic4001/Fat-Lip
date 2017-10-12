@@ -37,7 +37,7 @@ public class HelpScreen extends Screen {
 	}
 
 	@Override
-	public void onCreate(int width, int height, boolean contextLost) {
+	public void onCreate(int width, int height) {
 
 	}
 

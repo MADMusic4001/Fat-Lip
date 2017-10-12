@@ -16,7 +16,7 @@
  *
  */
 
-package com.madinnovations.fatlip.controller.framework.impl;
+package com.madinnovations.fatlip.view.activities;
 
 import android.app.Activity;
 import android.graphics.Point;
@@ -29,10 +29,11 @@ import android.view.WindowManager;
 import com.madinnovations.fatlip.controller.framework.FileIO;
 import com.madinnovations.fatlip.controller.framework.Game;
 import com.madinnovations.fatlip.controller.framework.Input;
+import com.madinnovations.fatlip.controller.framework.impl.AndroidFileIO;
+import com.madinnovations.fatlip.controller.framework.impl.AndroidInput;
 import com.madinnovations.fatlip.model.framework.Audio;
 import com.madinnovations.fatlip.model.framework.impl.AndroidAudio;
 import com.madinnovations.fatlip.view.framework.Screen;
-import com.madinnovations.fatlip.view.framework.impl.GLGraphics;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -48,7 +49,6 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         Idle
     }
 	private GLSurfaceView glView;
-	private GLGraphics    glGraphics;
 	private Audio         audio;
 	private Input         input;
 	private FileIO        fileIO;
@@ -70,7 +70,6 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 		glView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setContentView(glView);
 
-        glGraphics = new GLGraphics(glView);
         fileIO = new AndroidFileIO(this);
         audio = new AndroidAudio(this);
         input = new AndroidInput(this, glView, 1, 1);
@@ -97,7 +96,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 	@Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
 		if(screen != null) {
-			screen.onCreate(width, height, true);
+			screen.onCreate(width, height);
 		}
 	}
 
@@ -135,13 +134,15 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         }
     }
 
-    @Override 
+    @Override
     public void onPause() {
 		synchronized(stateChanged) {
-            if(isFinishing())            
-                state = GLGameState.Finished;
-            else
-                state = GLGameState.Paused;
+            if(isFinishing()) {
+				state = GLGameState.Finished;
+			}
+            else {
+				state = GLGameState.Paused;
+			}
             while(true) {
                 try {
                     stateChanged.wait();
@@ -153,10 +154,6 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         }
         glView.onPause();
         super.onPause();
-    }
-
-	public GLGraphics getGLGraphics() {
-        return glGraphics;
     }
 
     public Input getInput() {
@@ -179,7 +176,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         screen.dispose();
 		Point size = new Point();
 		getWindow().getWindowManager().getDefaultDisplay().getSize(size);
-		newScreen.onCreate(size.x, size.y, true);
+		newScreen.onCreate(size.x, size.y);
         newScreen.resume();
         newScreen.update(0);
         screen = newScreen;

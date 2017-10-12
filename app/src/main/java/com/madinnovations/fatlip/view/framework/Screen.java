@@ -17,7 +17,12 @@
  */
 package com.madinnovations.fatlip.view.framework;
 
+import android.opengl.GLSurfaceView;
+
 import com.madinnovations.fatlip.controller.framework.Game;
+import com.madinnovations.fatlip.view.activities.GLGame;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Base class for Screen implementations
@@ -29,10 +34,43 @@ public abstract class Screen {
 		this.game = game;
 	}
 
-	public abstract void onCreate(int width, int height, boolean contextLost);
+	/**
+	 * Method to allow a screen to do one time initialization of resources it will need for rendering. The method will be
+	 * called in response to {{@link GLSurfaceView.Renderer#onSurfaceChanged(GL10, int, int)}} and when the app requests a
+	 * screen to be displayed by calling {@link GLGame#setScreen(Screen)}.
+	 *
+	 * @param width  the pixel width of the display
+	 * @param height  the pixel height of the display
+	 */
+	public abstract void onCreate(int width, int height);
+
+	/**
+	 * Method to allow the screen to update it's model prior to rendering.
+	 *
+	 * @param deltaTime  the elapsed time since the last call to this method. Will be 0 the first time the method is called
+	 */
 	public abstract void update(float deltaTime);
+
+	/**
+	 * Method to allow the screen to draw itself.
+	 *
+	 * @param deltaTime  the elapsed time since the last call to this method
+	 */
 	public abstract void present(float deltaTime);
+
+	/**
+	 * Notifies the screen that it is being paused. This can occur when the {@link GLGame.GLGameState} changes to PAUSED or
+	 * FINISHED or when the screen is about to be replaced by a different screen.
+	 */
 	public abstract void pause();
+
+	/**
+	 * Notifies the screen that it is about to be displayed.
+	 */
 	public abstract void resume();
+
+	/**
+	 * Notifies the screen that it will no longer be rendered and should release any resources it may have created.
+	 */
 	public abstract void dispose();
 }

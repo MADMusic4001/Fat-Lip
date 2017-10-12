@@ -16,26 +16,14 @@
  *
  */
 
-package com.madinnovations.fatlip.view.framework.impl;
-
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
+package com.madinnovations.fatlip.view.framework;
 
 /**
- * Class to manage OpenGL objects
+ * ${CLASS_DESCRIPTION}
+ *
+ * @author Mark
+ *         Created 9/17/2017.
  */
-public class GLGraphics {
-	GLSurfaceView glView;
 
-	public GLGraphics(GLSurfaceView glView) {
-		this.glView = glView;
-	}
-
-	public int getWidth() {
-		return glView.getWidth();
-	}
-
-	public int getHeight() {
-		return glView.getHeight();
-	}
+public class GLButton {
 }

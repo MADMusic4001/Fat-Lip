@@ -30,25 +30,6 @@ import com.madinnovations.fatlip.view.utils.ResourceUtils;
 public class FatLipApp extends Application {
 	private ApplicationComponent applicationComponent;
 	private static ResourceUtils resourceUtils;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private static ClipboardManager clipboardManager;
 
 	@Override

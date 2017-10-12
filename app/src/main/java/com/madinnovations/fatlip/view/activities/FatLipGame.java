@@ -17,7 +17,6 @@ package com.madinnovations.fatlip.view.activities;
 
 import android.os.Bundle;
 
-import com.madinnovations.fatlip.controller.framework.impl.GLGame;
 import com.madinnovations.fatlip.view.di.components.ActivityComponent;
 import com.madinnovations.fatlip.view.framework.Screen;
 import com.madinnovations.fatlip.view.screens.LoadingScreen;

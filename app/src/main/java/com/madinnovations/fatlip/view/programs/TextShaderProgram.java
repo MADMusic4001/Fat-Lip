@@ -71,13 +71,13 @@ public class TextShaderProgram extends ShaderProgram {
 	}
 
 	// Getters
-	public int getaPositionLocation() {
+	public int getPositionLocation() {
 		return aPositionLocation;
 	}
-	public int getaColorLocation() {
+	public int getColorLocation() {
 		return aColorLocation;
 	}
-	public int getaTextureCoordinatesLocation() {
+	public int getTextureCoordinatesLocation() {
 		return aTextureCoordinatesLocation;
 	}
 }

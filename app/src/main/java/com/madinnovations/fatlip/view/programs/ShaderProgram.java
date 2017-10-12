@@ -16,7 +16,7 @@ import com.madinnovations.fatlip.view.utils.TextResourceReader;
 
 import static android.opengl.GLES20.glUseProgram;
 @SuppressWarnings({"WeakerAccess", "unused"})
-abstract class ShaderProgram {
+public abstract class ShaderProgram {
     // Uniform constants
     protected static final String U_MATRIX = "u_Matrix";
     protected static final String U_MVP_MATRIX = "u_MVPMatrix";
@@ -55,4 +55,9 @@ abstract class ShaderProgram {
         // Set the current OpenGL shader program to this program.
         glUseProgram(program);
     }
+
+    // Getters
+	public int getProgram() {
+		return program;
+	}
 }

@@ -33,6 +33,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.madinnovations.fatlip.view.framework.SpriteBatch;
 import com.madinnovations.fatlip.view.framework.TextureRegion;
@@ -582,6 +583,8 @@ public class GLText {
 		Matrix.setIdentityM(idMatrix, 0);
 		batch.drawSprite(width - (textureSize / 2), height - ( textureSize / 2 ),
 				textureSize, textureSize, textureRgn, idMatrix);
+		Log.d(TAG, "drawTexture: x = " + (width - (textureSize/2)));
+		Log.d(TAG, "drawTexture: y = " + (height - (textureSize/2)));
 		batch.endBatch();
 	}
 }

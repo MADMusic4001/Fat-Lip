@@ -19,7 +19,6 @@
 package com.madinnovations.fatlip.view.framework;
 
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.madinnovations.fatlip.model.GLText;
 import com.madinnovations.fatlip.view.programs.ShaderProgram;
@@ -55,8 +54,7 @@ public class SpriteBatch {
 	@SuppressWarnings("PointlessArithmeticExpression")
 	public SpriteBatch(int maxSprites, ShaderProgram program)  {
 		this.vertexBuffer = new float[maxSprites * VERTICES_PER_SPRITE * VERTEX_SIZE];
-		this.vertices = new Vertices(program, maxSprites * VERTICES_PER_SPRITE,
-									 maxSprites * INDICES_PER_SPRITE);
+		this.vertices = new Vertices(program, maxSprites * VERTICES_PER_SPRITE, maxSprites * INDICES_PER_SPRITE);
 		this.bufferIndex = 0;
 		this.maxSprites = maxSprites;
 		this.numSprites = 0;
@@ -76,6 +74,11 @@ public class SpriteBatch {
         mvpMatricesHandle = glGetUniformLocation(program.getProgram(), "u_MVPMatrix");
 	}
 
+	/**
+	 * Initializes batch parameters so that all sprites in the batch will be rendered.
+	 *
+	 * @param vpMatrix  the view projection matrix to use when rendering
+	 */
 	public void beginBatch(float[] vpMatrix)  {
 		numSprites = 0;
 		bufferIndex = 0;
@@ -101,6 +104,7 @@ public class SpriteBatch {
 	 * Batch specified sprite to batch. adds vertices for sprite to vertex buffer
 	 * 		NOTE: MUST be called after beginBatch(), and before endBatch()!
 	 * 		NOTE: if the batch overflows, this will render the current batch, restart it, and then batch this sprite.
+	 *
 	 * @param x  the x position of the sprite (center)
 	 * @param y  the y position of the sprite (center)
 	 * @param width  the width of the sprite

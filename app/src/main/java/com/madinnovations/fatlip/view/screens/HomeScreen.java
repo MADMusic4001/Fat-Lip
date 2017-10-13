@@ -20,6 +20,7 @@ package com.madinnovations.fatlip.view.screens;
 
 import android.graphics.RectF;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import com.madinnovations.fatlip.controller.framework.Input;
@@ -29,8 +30,11 @@ import com.madinnovations.fatlip.model.GLText;
 import com.madinnovations.fatlip.view.activities.FatLipGame;
 import com.madinnovations.fatlip.view.framework.Screen;
 import com.madinnovations.fatlip.view.programs.TextShaderProgram;
+import com.madinnovations.fatlip.view.utils.Geometry;
 
 import java.util.List;
+
+import static android.opengl.GLES20.glViewport;
 
 /**
  * Renders the home screen
@@ -42,8 +46,6 @@ public class HomeScreen extends Screen {
 	private final float[] mtrxProjection = new float[16];
 	private final float[] mtrxView = new float[16];
 	private final float[] mtrxProjectionAndView = new float[16];
-	private int    screenWidth;
-	private int    screenHeight;
 	private GLText glText;
 	private RectF playRect = new RectF();
 	private RectF helpRect = new RectF();
@@ -59,21 +61,28 @@ public class HomeScreen extends Screen {
 
 	@Override
 	public void onCreate(int width, int height) {
-		screenWidth = width;
-		screenHeight = height;
+		glViewport(0, 0, width, height);
+
 		glText = new GLText(new TextShaderProgram((FatLipGame)game), ((FatLipGame)game).getAssets());
 		glText.load("Roboto-Regular.ttf", 72, 0xffff0000, 2);
 		float textWidth = glText.getLength("Play");
 		float textHeight = glText.getHeight();
-		playRect.left = screenWidth/2 - textWidth/2;
+		playRect.left = width /2 - textWidth/2;
 		playRect.right = playRect.left + textWidth;
-		playRect.top = screenHeight/2 - textHeight*2;
+		playRect.top = height /2 - textHeight*2;
 		playRect.bottom = playRect.top - textHeight;
 		textWidth = glText.getLength("Help");
-		helpRect.left = screenWidth/2 - textWidth/2;
+		helpRect.left = width /2 - textWidth/2;
 		helpRect.right = helpRect.left + textWidth;
-		helpRect.top = screenHeight/2 + textHeight;
+		helpRect.top = height /2 + textHeight;
 		helpRect.bottom = helpRect.top + textHeight;
+		Matrix.setLookAtM(mtrxView, 0, 0, 0, 1.45f, 0, 0, 4, 0, 1.0f, 0);
+		float ratio = (float)width / height;
+		Matrix.frustumM(mtrxProjection, 0, 0, width, height, 0, 2, 10);
+//		Matrix.orthoM(mtrxProjection, 0, 0, width, 0, height, -1, 1);
+		Log.d(TAG, "onCreate: mtrxProjection = " + Geometry.printMatrix(mtrxProjection, 2));
+		Matrix.multiplyMM(mtrxProjectionAndView, 0, mtrxProjection, 0, mtrxView, 0);
+		Log.d(TAG, "onCreate: mtrxProjectionAndView = " + Geometry.printMatrix(mtrxProjectionAndView, 2));
 	}
 
 	@Override
@@ -115,6 +124,7 @@ public class HomeScreen extends Screen {
 		// enable texture + alpha blending
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		glText.drawTexture(512, 512, mtrxProjectionAndView);
 		glText.draw("Play", playRect.left, playRect.top, 0.0f, 0.0f, 0.0f, 0.0f);
 		glText.draw("Help", helpRect.left, helpRect.top, 0.0f, 0.0f, 0.0f, 0.0f);
 		glText.end();
@@ -131,7 +141,8 @@ public class HomeScreen extends Screen {
 	@Override
 	public void dispose() {}
 
-	private boolean inBounds(Input.TouchEvent event, RectF hitRect) {
+	private boolean
+	inBounds(Input.TouchEvent event, RectF hitRect) {
 		return event.x > hitRect.left && event.x < hitRect.right - 1 &&
 				event.y > hitRect.top && event.y < hitRect.bottom - 1;
 	}

@@ -23,151 +23,148 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import android.opengl.GLES20;
+import static android.opengl.GLES20.GL_FLOAT;
+import static android.opengl.GLES20.GL_UNSIGNED_SHORT;
+import static android.opengl.GLES20.glDisableVertexAttribArray;
+import static android.opengl.GLES20.glDrawArrays;
+import static android.opengl.GLES20.glDrawElements;
+import static android.opengl.GLES20.glEnableVertexAttribArray;
+import static android.opengl.GLES20.glGetAttribLocation;
+import static android.opengl.GLES20.glVertexAttribPointer;
 
+import com.madinnovations.fatlip.view.programs.ShaderProgram;
+
+@SuppressWarnings({"SameParameterValue", "WeakerAccess", "unused"})
 public class Vertices {
-
-	//--Constants--//
-	final static int POSITION_CNT_2D = 2;              // Number of Components in Vertex Position for 2D
-	final static int POSITION_CNT_3D = 3;              // Number of Components in Vertex Position for 3D
-	final static int COLOR_CNT = 4;                    // Number of Components in Vertex Color
-	final static int TEXCOORD_CNT = 2;                 // Number of Components in Vertex Texture Coords
-	final static int NORMAL_CNT = 3;                   // Number of Components in Vertex Normal
-	private static final int MVP_MATRIX_INDEX_CNT = 1; // Number of Components in MVP matrix index
-	
-	final static int INDEX_SIZE = Short.SIZE / 8;      // Index Byte Size (Short.SIZE = bits)
-	
 	private static final String TAG = "Vertices";
+	private final static int POSITION_CNT_2D = 2;
+	private final static int POSITION_CNT_3D = 3;
+	private final static int COLOR_CNT = 4;
+	private final static int TEXCOORD_CNT = 2;
+	private final static int NORMAL_CNT = 3;
+	private static final int MVP_MATRIX_INDEX_CNT = 1;
+	private final static int INDEX_SIZE = Short.SIZE / 8;
 
-	//--Members--//
-	// NOTE: all members are constant, and initialized in constructor!
-	public final int positionCnt;                      // Number of Position Components (2=2D, 3=3D)
-	public final int vertexStride;                     // Vertex Stride (Element Size of a Single Vertex)
-	public final int vertexSize;                       // Bytesize of a Single Vertex
-	final IntBuffer vertices;                          // Vertex Buffer
-	final ShortBuffer indices;                         // Index Buffer
-	public int numVertices;                            // Number of Vertices in Buffer
-	public int numIndices;                             // Number of Indices in Buffer
-	final int[] tmpBuffer;                             // Temp Buffer for Vertex Conversion
-	private int mTextureCoordinateHandle;
-	private int mPositionHandle;
-	private int mMVPIndexHandle;
+	private final int         positionCnt;
+	private final int         vertexStride;
+	private final int         vertexSize;
+	private final IntBuffer   vertices;
+	private final ShortBuffer indices;
+	private int               numVertices;
+	private int               numIndices;
+	private final int[]       tmpBuffer;
+	private int               textureCoordinateHandle;
+	private int               positionHandle;
+	private int               mvpIndexHandle;
 
-	//--Constructor--//
-	// D: create the vertices/indices as specified (for 2d/3d)
-	// A: maxVertices - maximum vertices allowed in buffer
-	//    maxIndices - maximum indices allowed in buffer
-	public Vertices(int maxVertices, int maxIndices)  {
-		//      this.gl = gl;                                   // Save GL Instance
-		this.positionCnt = POSITION_CNT_2D;  // Set Position Component Count
-		this.vertexStride = this.positionCnt + TEXCOORD_CNT + MVP_MATRIX_INDEX_CNT;  // Calculate Vertex Stride
-		this.vertexSize = this.vertexStride * 4;        // Calculate Vertex Byte Size
+	/**
+	 * Creates a new Vertice instance
+	 *
+	 * @param maxVertices  maximum vertices allowed in buffer
+	 * @param maxIndices  maximum indices allowed in buffer
+	 */
+	public Vertices(ShaderProgram program, int maxVertices, int maxIndices)  {
+		this.positionCnt = POSITION_CNT_2D;
+		this.vertexStride = this.positionCnt + TEXCOORD_CNT + MVP_MATRIX_INDEX_CNT;
+		this.vertexSize = this.vertexStride * 4;
 
-		ByteBuffer buffer = ByteBuffer.allocateDirect( maxVertices * vertexSize );  // Allocate Buffer for Vertices (Max)
-		buffer.order( ByteOrder.nativeOrder() );        // Set Native Byte Order
-		this.vertices = buffer.asIntBuffer();           // Save Vertex Buffer
+		ByteBuffer buffer = ByteBuffer.allocateDirect( maxVertices * vertexSize );
+		buffer.order( ByteOrder.nativeOrder());
+		this.vertices = buffer.asIntBuffer();
 
-		if ( maxIndices > 0 )  {                        // IF Indices Required
-			buffer = ByteBuffer.allocateDirect( maxIndices * INDEX_SIZE );  // Allocate Buffer for Indices (MAX)
-			buffer.order( ByteOrder.nativeOrder() );     // Set Native Byte Order
-			this.indices = buffer.asShortBuffer();       // Save Index Buffer
+		if ( maxIndices > 0 )  {
+			buffer = ByteBuffer.allocateDirect( maxIndices * INDEX_SIZE );
+			buffer.order( ByteOrder.nativeOrder());
+			this.indices = buffer.asShortBuffer();
 		}
-		else                                            // ELSE Indices Not Required
-			indices = null;                              // No Index Buffer
+		else {
+			indices = null;
+		}
 
-		numVertices = 0;                                // Zero Vertices in Buffer
-		numIndices = 0;                                 // Zero Indices in Buffer
+		numVertices = 0;
+		numIndices = 0;
 
-		this.tmpBuffer = new int[maxVertices * vertexSize / 4];  // Create Temp Buffer
+		this.tmpBuffer = new int[maxVertices * vertexSize / 4];
 
-		// initialize the shader attribute handles
-		mTextureCoordinateHandle = AttribVariable.A_TexCoordinate.getHandle();
-		mMVPIndexHandle = AttribVariable.A_MVPMatrixIndex.getHandle();
-		mPositionHandle = AttribVariable.A_Position.getHandle();
+		textureCoordinateHandle = glGetAttribLocation(program.getProgram(), AttribVariable.A_TexCoordinate.getName());
+		mvpIndexHandle = glGetAttribLocation(program.getProgram(), AttribVariable.A_MVPMatrixIndex.getName());
+		positionHandle = glGetAttribLocation(program.getProgram(), AttribVariable.A_Position.getName());
 	}
 
-	//--Set Vertices--//
-	// D: set the specified vertices in the vertex buffer
-	//    NOTE: optimized to use integer buffer!
-	// A: vertices - array of vertices (floats) to set
-	//    offset - offset to first vertex in array
-	//    length - number of floats in the vertex array (total)
-	//             for easy setting use: vtx_cnt * (this.vertexSize / 4)
-	// R: [none]
+	/**
+	 * set the specified vertices in the vertex buffer
+	 * 		NOTE: optimized to use integer buffer!
+	 *
+	 * @param vertices  array of vertices (floats) to set
+	 * @param offset  offset to first vertex in array
+	 * @param length  number of floats in the vertex array (total)
+	 * 					for easy setting use: vtx_cnt * (this.vertexSize / 4)
+	 */
 	public void setVertices(float[] vertices, int offset, int length)  {
-		this.vertices.clear();                          // Remove Existing Vertices
-		int last = offset + length;                     // Calculate Last Element
-		for ( int i = offset, j = 0; i < last; i++, j++ )  // FOR Each Specified Vertex
-			tmpBuffer[j] = Float.floatToRawIntBits( vertices[i] );  // Set Vertex as Raw Integer Bits in Buffer
-		this.vertices.put( tmpBuffer, 0, length );      // Set New Vertices
-		this.vertices.flip();                           // Flip Vertex Buffer
-		this.numVertices = length / this.vertexStride;  // Save Number of Vertices
+		this.vertices.clear();
+		int last = offset + length;
+		for ( int i = offset, j = 0; i < last; i++, j++ ) {
+			tmpBuffer[j] = Float.floatToRawIntBits(vertices[i]);
+		}
+		this.vertices.put( tmpBuffer, 0, length);
+		this.vertices.flip();
+		this.numVertices = length / this.vertexStride;
 	}
 
-	//--Set Indices--//
-	// D: set the specified indices in the index buffer
-	// A: indices - array of indices (shorts) to set
-	//    offset - offset to first index in array
-	//    length - number of indices in array (from offset)
-	// R: [none]
+	/**
+	 * set the specified indices in the index buffer
+	 *
+	 * @param indices  array of indices (shorts) to set
+	 * @param offset  offset to first index in array
+	 * @param length  number of indices in array (from offset)
+	 */
 	public void setIndices(short[] indices, int offset, int length)  {
-		this.indices.clear();                           // Clear Existing Indices
-		this.indices.put( indices, offset, length );    // Set New Indices
-		this.indices.flip();                            // Flip Index Buffer
-		this.numIndices = length;                       // Save Number of Indices
+		this.indices.clear();
+		this.indices.put( indices, offset, length);
+		this.indices.flip();
+		this.numIndices = length;
 	}
 
-	//--Bind--//
-	// D: perform all required binding/state changes before rendering batches.
-	//    USAGE: call once before calling draw() multiple times for this buffer.
-	// A: [none]
-	// R: [none]
+	/**
+	 * perform all required binding/state changes before rendering batches.
+	 */
 	public void bind()  {
-		// bind vertex position pointer
-		vertices.position( 0 );                         // Set Vertex Buffer to Position
-		GLES20.glVertexAttribPointer(mPositionHandle, positionCnt, 
-				GLES20.GL_FLOAT, false, vertexSize, vertices);
-		GLES20.glEnableVertexAttribArray(mPositionHandle);
+		vertices.position(0);
+		glVertexAttribPointer(positionHandle, positionCnt, GL_FLOAT, false, vertexSize, vertices);
+		glEnableVertexAttribArray(positionHandle);
 
-		// bind texture position pointer
-		vertices.position(positionCnt);  // Set Vertex Buffer to Texture Coords (NOTE: position based on whether color is also specified)
-		GLES20.glVertexAttribPointer(mTextureCoordinateHandle, TEXCOORD_CNT, 
-				GLES20.GL_FLOAT, false, vertexSize, vertices);
-		GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
-		
-		// bind MVP Matrix index position handle
+		vertices.position(positionCnt);
+		glVertexAttribPointer(textureCoordinateHandle, TEXCOORD_CNT, GL_FLOAT, false, vertexSize, vertices);
+		glEnableVertexAttribArray(textureCoordinateHandle);
+
 		vertices.position(positionCnt + TEXCOORD_CNT);
-		GLES20.glVertexAttribPointer(mMVPIndexHandle, MVP_MATRIX_INDEX_CNT, 
-				GLES20.GL_FLOAT, false, vertexSize, vertices);
-		GLES20.glEnableVertexAttribArray(mMVPIndexHandle);
+		glVertexAttribPointer(mvpIndexHandle, MVP_MATRIX_INDEX_CNT, GL_FLOAT, false, vertexSize, vertices);
+		glEnableVertexAttribArray(mvpIndexHandle);
 	}
 
-	//--Draw--//
-	// D: draw the currently bound vertices in the vertex/index buffers
-	//    USAGE: can only be called after calling bind() for this buffer.
-	// A: primitiveType - the type of primitive to draw
-	//    offset - the offset in the vertex/index buffer to start at
-	//    numVertices - the number of vertices (indices) to draw
-	// R: [none]
+	/**
+	 * Draw the currently bound vertices in the vertex/index buffers
+	 * 		USAGE: can only be called after calling bind() for this buffer.
+	 *
+	 * @param primitiveType  the type of primitive to draw
+	 * @param offset  the offset in the vertex/index buffer to start at
+	 * @param numVertices  the number of vertices (indices) to draw
+	 */
 	public void draw(int primitiveType, int offset, int numVertices)  {
-		if (indices != null)  {                       // IF Indices Exist
-			indices.position(offset);                  // Set Index Buffer to Specified Offset
-			//draw indexed
-			GLES20.glDrawElements(primitiveType, numVertices,
-					GLES20.GL_UNSIGNED_SHORT, indices);
+		if (indices != null) {
+			indices.position(offset);
+			glDrawElements(primitiveType, numVertices, GL_UNSIGNED_SHORT, indices);
 		}
-		else  {                                         // ELSE No Indices Exist
-			//draw direct
-			GLES20.glDrawArrays(primitiveType, offset, numVertices);
+		else  {
+			glDrawArrays(primitiveType, offset, numVertices);
 		}
 	}
 
-	//--Unbind--//
-	// D: clear binding states when done rendering batches.
-	//    USAGE: call once before calling draw() multiple times for this buffer.
-	// A: [none]
-	// R: [none]
+	/**
+	 * clear binding states when done rendering batches.
+	 * USAGE: call once before calling draw() multiple times for this buffer.
+	 */
 	public void unbind()  {
-		GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
+		glDisableVertexAttribArray(textureCoordinateHandle);
 	}
 }

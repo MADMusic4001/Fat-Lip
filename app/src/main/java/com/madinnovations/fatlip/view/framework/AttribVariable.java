@@ -18,12 +18,11 @@
 
 package com.madinnovations.fatlip.view.framework;
 
-
 public enum AttribVariable {
-	A_Position(1, "a_Position"), 
-	A_TexCoordinate(2, "a_TexCoordinate"), 
+	A_Position(1, "a_Position"),
+	A_TexCoordinate(2, "a_TexCoordinate"),
 	A_MVPMatrixIndex(3, "a_MVPMatrixIndex");
-	
+
 	private int mHandle;
 	private String mName;
 

@@ -35,6 +35,8 @@ import com.madinnovations.fatlip.model.framework.Audio;
 import com.madinnovations.fatlip.model.framework.impl.AndroidAudio;
 import com.madinnovations.fatlip.view.framework.Screen;
 
+import java.util.Stack;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -53,6 +55,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 	private Input         input;
 	private FileIO        fileIO;
 	private Screen        screen;
+	private Stack<Screen> previousScreens = new Stack<>();
 	private GLGameState state = GLGameState.Initialized;
 	private final Object stateChanged = new Object();
 	private long startTime = System.nanoTime();
@@ -81,7 +84,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         glView.onResume();
     }
 
-    @Override
+	@Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		synchronized(stateChanged) {
             if(state == GLGameState.Initialized) {
@@ -156,7 +159,17 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         super.onPause();
     }
 
-    public Input getInput() {
+	@Override
+	public void onBackPressed() {
+    	if(previousScreens.size() == 0) {
+			super.onBackPressed();
+		}
+		else {
+    		setScreen(previousScreens.pop(), false);
+		}
+	}
+
+	public Input getInput() {
         return input;
     }
 
@@ -168,7 +181,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         return audio;
     }
 
-    public void setScreen(Screen newScreen) {
+    public void setScreen(Screen newScreen, boolean addToStack) {
 		if (newScreen == null) {
 			throw new IllegalArgumentException("Screen must not be null");
 		}
@@ -179,6 +192,9 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 		newScreen.onCreate(size.x, size.y);
         newScreen.resume();
         newScreen.update(0);
+        if(addToStack) {
+        	previousScreens.push(screen);
+		}
         screen = newScreen;
     }
 

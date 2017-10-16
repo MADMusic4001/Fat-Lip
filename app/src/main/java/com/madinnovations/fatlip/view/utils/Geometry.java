@@ -8,6 +8,11 @@
  */
 package com.madinnovations.fatlip.view.utils;
 
+import android.graphics.RectF;
+import android.opengl.GLU;
+import android.opengl.Matrix;
+import android.util.Log;
+
 @SuppressWarnings("WeakerAccess, unused")
 public class Geometry {
 	private static final String TAG = "Geometry";
@@ -226,5 +231,50 @@ public class Geometry {
 			}
 		}
 		return max;
+	}
+
+	public static float[] getWorldFromScreen(int screenWidth, int screenHeight, float screenX, float screenY,
+										  float[] projectionMatrix, float[] modelViewMatrix) {
+		float[] worldPos = new float[2];
+
+		float[] invertedMatrix, transformMatrix, normalizedInPoint, outPoint;
+		invertedMatrix = new float[16];
+		transformMatrix = new float[16];
+		normalizedInPoint = new float[4];
+		outPoint = new float[4];
+
+		int oglTouchY = (int)(screenHeight - screenY);
+
+		normalizedInPoint[0] = (float)(screenX*2.0f / screenWidth - 1.0);
+		normalizedInPoint[1] = (float)(oglTouchY*2.0f / screenHeight - 1.0);
+		normalizedInPoint[2] = -1.0f;
+		normalizedInPoint[3] = 1.0f;
+
+		Matrix.multiplyMM(transformMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0);
+		Matrix.invertM(invertedMatrix, 0, transformMatrix, 0);
+
+		Matrix.multiplyMV(outPoint, 0, invertedMatrix, 0, normalizedInPoint, 0);
+
+		if(outPoint[3] == 0.0) {
+			Log.e(TAG, "getWorldFromScreen: Error! w = 0");
+			return worldPos;
+		}
+
+		worldPos[0] = outPoint[0] / outPoint[3];
+		worldPos[1] = outPoint[1] / outPoint[3];
+
+		return worldPos;
+	}
+
+	/**
+	 * Checks if the given coordinates are inside the boundaries of the given rectangle.
+	 *
+	 * @param x  the x coordinate to check
+	 * @param y  the y coordinate to check
+	 * @param hitRect  the rectangle defining the boundary to check
+	 * @return  true if the coordinates are inside the rectangle, otherwise false.
+	 */
+	public static boolean inBounds(float x, float y, RectF hitRect) {
+		return x > hitRect.left && x < hitRect.right - 1 && y > hitRect.bottom && y < hitRect.top - 1;
 	}
 }

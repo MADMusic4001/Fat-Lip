@@ -21,12 +21,13 @@ package com.madinnovations.fatlip.view.screens;
 import android.opengl.GLES20;
 
 import com.madinnovations.fatlip.R;
+import com.madinnovations.fatlip.controller.framework.Game;
 import com.madinnovations.fatlip.controller.framework.Input;
 import com.madinnovations.fatlip.controller.framework.Settings;
 import com.madinnovations.fatlip.model.Assets;
 import com.madinnovations.fatlip.model.Splash;
 import com.madinnovations.fatlip.model.framework.FramesPerSecondLogger;
-import com.madinnovations.fatlip.view.activities.FatLipGame;
+import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.framework.Screen;
 import com.madinnovations.fatlip.view.programs.SplashShaderProgram;
 import com.madinnovations.fatlip.view.utils.TextureHelper;
@@ -51,9 +52,9 @@ public class LoadingScreen extends Screen {
 	/**
 	 * Creates a new LoadingScreen instance
 	 *
-	 * @param game  a {@link FatLipGame} instance
+	 * @param game  a {@link Game} instance
 	 */
-	public LoadingScreen(FatLipGame game) {
+	public LoadingScreen(Game game) {
 		super(game);
 		splash = new Splash();
 	}
@@ -65,8 +66,8 @@ public class LoadingScreen extends Screen {
 		glViewport(0, 0, width, height);
 		float ratio = (float)width / height;
 
-		textureId = TextureHelper.loadTexture((FatLipGame)game, R.drawable.fatlip);
-		splashProgram = new SplashShaderProgram((FatLipGame)game);
+		textureId = TextureHelper.loadTexture((GLGame)game, R.drawable.fatlip);
+		splashProgram = new SplashShaderProgram((GLGame)game);
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class LoadingScreen extends Screen {
 		for(int i = 0; i < len; i++) {
 			Input.TouchEvent event = touchEvents.get(i);
 			if(event.type == Input.TouchEvent.TOUCH_UP) {
-				game.setScreen(new HomeScreen((FatLipGame) game));
+				game.setScreen(new NewHomeScreen(game), false);
 			}
 		}
 	}

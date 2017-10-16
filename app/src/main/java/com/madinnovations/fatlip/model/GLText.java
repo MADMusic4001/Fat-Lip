@@ -277,8 +277,8 @@ public class GLText {
 	}
 
 	private void initDraw(float red, float green, float blue, float alpha) {
-		glUseProgram(program.getProgram());
-		
+		program.useProgram();
+
 		float[] color = {red, green, blue, alpha};
 		glUniform4fv(colorHandle, 1, color , 0);
 		glEnableVertexAttribArray(colorHandle);
@@ -322,10 +322,10 @@ public class GLText {
 		Matrix.rotateM(modelMatrix, 0, angleDegZ, 0, 0, 1);
 		Matrix.rotateM(modelMatrix, 0, angleDegX, 1, 0, 0);
 		Matrix.rotateM(modelMatrix, 0, angleDegY, 0, 1, 0);
-		
+
 		float letterX, letterY; 
 		letterX = letterY = 0;
-		
+
 		for (int i = 0; i < len; i++)  {
 			int c = (int)text.charAt(i) - CHAR_START;
 			if (c < 0 || c >= CHAR_CNT) {

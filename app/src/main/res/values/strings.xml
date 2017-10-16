@@ -18,4 +18,13 @@
 
 <resources>
   <string name="app_name">Fat Lip</string>
+  <string name="play">Play</string>
+  <string name="help">Help</string>
+  <string name="instructions">Throw objects at the faces to try to give them a fat lip before time runs out.</string>
+  <string name="high_scores">High Scores</string>
+  <string name="select_opponent">Select Opponent:</string>
+  <string name="select_weapon">Select your weapon</string>
+  <string name="select_scenery">Select your scenery</string>
+  <string name="start">Start</string>
+  <string name="back">Back</string>
 </resources>

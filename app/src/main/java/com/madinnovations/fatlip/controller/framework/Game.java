@@ -31,7 +31,7 @@ public interface Game {
 
 	Audio getAudio();
 
-	void setScreen(Screen screen);
+	void setScreen(Screen screen, boolean addToStack);
 
 	Screen getCurrentScreen();
 

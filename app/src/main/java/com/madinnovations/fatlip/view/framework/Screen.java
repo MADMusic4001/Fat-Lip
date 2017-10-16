@@ -37,7 +37,7 @@ public abstract class Screen {
 	/**
 	 * Method to allow a screen to do one time initialization of resources it will need for rendering. The method will be
 	 * called in response to {{@link GLSurfaceView.Renderer#onSurfaceChanged(GL10, int, int)}} and when the app requests a
-	 * screen to be displayed by calling {@link GLGame#setScreen(Screen)}.
+	 * screen to be displayed by calling {@link GLGame#setScreen(Screen, boolean)}.
 	 *
 	 * @param width  the pixel width of the display
 	 * @param height  the pixel height of the display

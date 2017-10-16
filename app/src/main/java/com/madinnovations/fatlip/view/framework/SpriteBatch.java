@@ -19,9 +19,11 @@
 package com.madinnovations.fatlip.view.framework;
 
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.madinnovations.fatlip.model.GLText;
 import com.madinnovations.fatlip.view.programs.ShaderProgram;
+import com.madinnovations.fatlip.view.utils.Geometry;
 
 import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.glEnableVertexAttribArray;

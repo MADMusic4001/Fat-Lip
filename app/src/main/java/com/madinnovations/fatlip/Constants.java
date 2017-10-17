@@ -20,4 +20,10 @@ package com.madinnovations.fatlip;
 public class Constants {
     public static final int BYTES_PER_SHORT = 2;
     public static final int BYTES_PER_FLOAT = 4;
+    public static final String HIGH_SCORES_PREFS_NAME = "High_Scores";
+    public static final String HIGH_SCORE_1 = "highScore1";
+    public static final String HIGH_SCORE_2 = "highScore2";
+    public static final String HIGH_SCORE_3 = "highScore3";
+    public static final String HIGH_SCORE_4 = "highScore4";
+    public static final String HIGH_SCORE_5 = "highScore5";
 }

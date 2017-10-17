@@ -18,29 +18,56 @@
 
 package com.madinnovations.fatlip.view.screens;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.constraint.ConstraintLayout;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+
+import com.madinnovations.fatlip.Constants;
 import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.Game;
+import com.madinnovations.fatlip.controller.framework.Settings;
+import com.madinnovations.fatlip.model.Assets;
+import com.madinnovations.fatlip.view.activities.FatLipGame;
 import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.framework.Screen;
-
-import javax.microedition.khronos.opengles.GL;
 
 /**
  *
  */
 public class NewHomeScreen extends Screen {
-	public NewHomeScreen(Game game) {
+	private ConstraintLayout homeScreenLayout;
+	private Button playButton;
+	private Button helpButton;
+	private ListView highScoresListview;
+	private ArrayAdapter<Integer> highScoresArrayAdapter;
+
+	public NewHomeScreen(final Game game) {
 		super(game);
+		((GLGame)game).runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				LinearLayout parentLayout = ((GLGame)game).getParentLayout();
+				homeScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.home_screen,
+						null);
+				parentLayout.addView(homeScreenLayout);
+				playButton = (Button)((GLGame)game).findViewById(R.id.play_button);
+				initPlayButton();
+				helpButton = (Button)((GLGame)game).findViewById(R.id.help_button);
+				initHelpButton();
+				highScoresListview = (ListView)((GLGame)game).findViewById(R.id.high_scores_listview);
+				initHighScoresList();
+				((GLGame)game).getGlView().setVisibility(View.GONE);
+			}
+		});
 	}
 
 	@Override
 	public void onCreate(int width, int height) {
-		((GLGame)game).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				((GLGame)game).setContentView(R.layout.home_screen);
-			}
-		});
 	}
 
 	@Override
@@ -66,5 +93,60 @@ public class NewHomeScreen extends Screen {
 	@Override
 	public void dispose() {
 
+	}
+
+	private void initPlayButton() {
+		playButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				((GLGame)game).runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+						game.setScreen(new SetupScreen(game), true);
+						if(Settings.soundEnabled) {
+							Assets.click.play(1);
+						}
+					}
+				});
+			}
+		});
+	}
+
+	private void initHelpButton() {
+		helpButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				((GLGame)game).runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+						game.setScreen(new HelpScreen(game), true);
+						if(Settings.soundEnabled) {
+							Assets.click.play(1);
+						}
+					}
+				});
+			}
+		});
+	}
+
+	private void initHighScoresList() {
+		highScoresArrayAdapter = new ArrayAdapter<Integer>((FatLipGame)game, android.R.layout.simple_list_item_1);
+		SharedPreferences highScoresPreferences = ((GLGame)game).getSharedPreferences(Constants.HIGH_SCORES_PREFS_NAME,
+				Context.MODE_PRIVATE);
+		int score = highScoresPreferences.getInt(Constants.HIGH_SCORE_1, 0);
+		highScoresArrayAdapter.add(score);
+		score = highScoresPreferences.getInt(Constants.HIGH_SCORE_2, 0);
+		highScoresArrayAdapter.add(score);
+		score = highScoresPreferences.getInt(Constants.HIGH_SCORE_3, 0);
+		highScoresArrayAdapter.add(score);
+		score = highScoresPreferences.getInt(Constants.HIGH_SCORE_4, 0);
+		highScoresArrayAdapter.add(score);
+		score = highScoresPreferences.getInt(Constants.HIGH_SCORE_5, 0);
+		highScoresArrayAdapter.add(score);
+		highScoresListview.setAdapter(highScoresArrayAdapter);
 	}
 }

@@ -25,7 +25,9 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 
+import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.FileIO;
 import com.madinnovations.fatlip.controller.framework.Game;
 import com.madinnovations.fatlip.controller.framework.Input;
@@ -51,6 +53,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         Idle
     }
 	private GLSurfaceView glView;
+	private LinearLayout  parentLayout;
 	private Audio         audio;
 	private Input         input;
 	private FileIO        fileIO;
@@ -67,11 +70,12 @@ public abstract class GLGame extends Activity implements Game, Renderer {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                              WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        glView = new GLSurfaceView(this);
+		setContentView(R.layout.opengl_layout);
+		parentLayout = (LinearLayout)findViewById(R.id.parent_layout);
+        glView = findViewById(R.id.surface_view);
 		glView.setEGLContextClientVersion(2);
         glView.setRenderer(this);
 		glView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        setContentView(glView);
 
         fileIO = new AndroidFileIO(this);
         audio = new AndroidAudio(this);
@@ -169,18 +173,16 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 		}
 	}
 
+	// Getters and setters
 	public Input getInput() {
         return input;
     }
-
     public FileIO getFileIO() {
         return fileIO;
     }
-
     public Audio getAudio() {
         return audio;
     }
-
     public void setScreen(Screen newScreen, boolean addToStack) {
 		if (newScreen == null) {
 			throw new IllegalArgumentException("Screen must not be null");
@@ -197,8 +199,13 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 		}
         screen = newScreen;
     }
-
     public Screen getCurrentScreen() {
         return screen;
     }
+	public GLSurfaceView getGlView() {
+		return glView;
+	}
+	public LinearLayout getParentLayout() {
+		return parentLayout;
+	}
 }

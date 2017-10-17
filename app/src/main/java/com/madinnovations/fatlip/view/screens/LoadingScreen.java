@@ -54,7 +54,7 @@ public class LoadingScreen extends Screen {
 	 *
 	 * @param game  a {@link Game} instance
 	 */
-	public LoadingScreen(Game game) {
+	public LoadingScreen(final Game game) {
 		super(game);
 		splash = new Splash();
 	}

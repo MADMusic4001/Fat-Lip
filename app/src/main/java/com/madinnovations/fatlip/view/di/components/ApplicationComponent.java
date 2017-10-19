@@ -17,6 +17,7 @@ package com.madinnovations.fatlip.view.di.components;
 
 import com.madinnovations.fatlip.view.di.modules.ActivityModule;
 import com.madinnovations.fatlip.view.di.modules.ApplicationModule;
+import com.madinnovations.fatlip.view.di.modules.ScreenModule;
 
 import javax.inject.Singleton;
 
@@ -29,4 +30,5 @@ import dagger.Component;
 @Component(modules = {ApplicationModule.class})
 public interface ApplicationComponent {
 	ActivityComponent newActivityComponent(ActivityModule activityModule);
+	ScreenComponent newScreenComponent(ScreenModule screenModule);
 }

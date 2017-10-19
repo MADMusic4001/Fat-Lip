@@ -16,28 +16,28 @@
  *
  */
 
-package com.madinnovations.fatlip.view.di.components;
+package com.madinnovations.fatlip.view.di.modules;
 
 import com.madinnovations.fatlip.view.di.PerActivity;
-import com.madinnovations.fatlip.view.di.modules.ActivityModule;
-import com.madinnovations.fatlip.view.di.modules.ApplicationModule;
-import com.madinnovations.fatlip.view.di.modules.ScreenModule;
-import com.madinnovations.fatlip.view.screens.LoadingScreen;
-import com.madinnovations.fatlip.view.screens.HomeScreen;
 import com.madinnovations.fatlip.view.screens.SetupScreen;
 
-import javax.inject.Singleton;
-
-import dagger.Component;
-import dagger.Subcomponent;
+import dagger.Module;
+import dagger.Provides;
 
 /**
- * The ScreenComponent dependency injection interface
+ * The ScreenModule dependency injection class.
  */
 @PerActivity
-@Subcomponent(modules = {ScreenModule.class})
-public interface ScreenComponent {
-	void injectInto(HomeScreen homeScreen);
-	void injectInto(LoadingScreen loadingScreen);
-	void injectInto(SetupScreen setupScreen);
+@Module
+public class ScreenModule {
+	private SetupScreen setupScreen;
+
+	public ScreenModule(SetupScreen setupScreen) {
+		this.setupScreen = setupScreen;
+	}
+
+	@Provides @PerActivity
+	SetupScreen provideSetupScreen() {
+		return this.setupScreen;
+	}
 }

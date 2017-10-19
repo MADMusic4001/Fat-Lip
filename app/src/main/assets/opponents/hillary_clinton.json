@@ -1,0 +1,8 @@
+{
+  "name": "Hillary Clinton",
+  "leftEye": [75, 125, 130, 175],
+  "rightEye": [130, 125, 188, 175],
+  "nose": [118, 166, 139, 193],
+  "mouth": [101, 200, 155, 226],
+  "fileName": "hillary_clinton.png"
+}

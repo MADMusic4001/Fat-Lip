@@ -85,7 +85,7 @@ public class LoadingScreen extends Screen {
 		for(int i = 0; i < len; i++) {
 			Input.TouchEvent event = touchEvents.get(i);
 			if(event.type == Input.TouchEvent.TOUCH_UP) {
-				game.setScreen(new NewHomeScreen(game), false);
+				game.setScreen(new HomeScreen(game), false);
 			}
 		}
 	}

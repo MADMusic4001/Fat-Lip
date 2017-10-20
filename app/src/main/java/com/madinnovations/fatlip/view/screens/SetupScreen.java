@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -41,10 +42,18 @@ import com.madinnovations.fatlip.view.di.components.ScreenComponent;
 import com.madinnovations.fatlip.view.di.modules.ScreenModule;
 import com.madinnovations.fatlip.view.framework.Screen;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * UI for selecting opponent, object and scenery for the game
@@ -123,30 +132,41 @@ public class SetupScreen extends Screen {
 	}
 
 	private void initOpponentsLayout() {
-		final List<List<Opponent>> opponentsWrapper = new ArrayList<>();
-		opponentRxHandler.loadOpponents().subscribe(opponentsWrapper::add);
-		List<Opponent> opponents = opponentsWrapper.get(0);
-		for(Opponent opponent : opponents) {
-			Bitmap bitmap = BitmapFactory.decodeFile(opponent.getImageFileName());
-			final ImageView imageView = new ImageView((GLGame)game);
-			imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 128, true));
-			imageView.setPadding(5, 5, 5, 5);
-			imageView.setSelected(true);
-			imageView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if(imageView.isSelected()) {
-						imageView.setBackgroundColor(Color.WHITE);
-						imageView.setSelected(false);
-					}
-					else {
-						imageView.setBackgroundColor(Color.RED);
+		opponentRxHandler.loadOpponents()
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(result -> {
+					for(Opponent opponent : result) {
+						Log.d(TAG, "onNext: opponent" + opponent);
+						InputStream is;
+						try {
+							is = ((GLGame) game).getFileIO().readAsset("opponents/" + opponent.getImageFileName());
+							Log.d(TAG, "onNext: ");
+						}
+						catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+						Bitmap bitmap = BitmapFactory.decodeStream(is);
+						final ImageView imageView = new ImageView((GLGame) game);
+						imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 128, true));
+						imageView.setPadding(5, 5, 5, 5);
 						imageView.setSelected(true);
+						imageView.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								if (imageView.isSelected()) {
+									imageView.setBackgroundColor(Color.WHITE);
+									imageView.setSelected(false);
+								}
+								else {
+									imageView.setBackgroundColor(Color.RED);
+									imageView.setSelected(true);
+								}
+							}
+						});
+						opponentsLayout.addView(imageView);
 					}
-				}
-			});
-			opponentsLayout.addView(imageView);
-		}
+		});
 	}
 
 	private void initBackButton() {

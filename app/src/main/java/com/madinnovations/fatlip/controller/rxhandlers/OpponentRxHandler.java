@@ -29,6 +29,8 @@ import com.madinnovations.fatlip.model.serializers.OpponentSerializer;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,25 +52,30 @@ public class OpponentRxHandler {
 	 * @param assetManager the {@link AssetManager} instance
 	 */
 	@Inject
-	public OpponentRxHandler(AssetManager assetManager) {
+	public OpponentRxHandler(AssetManager assetManager, OpponentSerializer opponentSerializer) {
 		this.assetManager = assetManager;
+		this.opponentSerializer = opponentSerializer;
 	}
 
 	public Flowable<List<Opponent>> loadOpponents() {
 		return Flowable.fromCallable(() -> {
-			String[] opponentFileNames = assetManager.list("assets/opponents/*.json");
+			String[] opponentFileNames = assetManager.list("opponents");
 			List<Opponent> opponents = new ArrayList<>();
 			for(String opponentFileName : opponentFileNames) {
 				Log.d(TAG, "call: opponentFileName = " + opponentFileName);
-				BufferedReader bufferedReader = new BufferedReader(new FileReader(opponentFileName));
-				final GsonBuilder gsonBuilder = new GsonBuilder();
-				gsonBuilder.registerTypeAdapter(Opponent.class, opponentSerializer);
-				gsonBuilder.setLenient();
-				final Gson gson = gsonBuilder.create();
+				if(opponentFileName.endsWith("json")) {
+					InputStream is = assetManager.open("opponents/" + opponentFileName);
+					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+					final GsonBuilder gsonBuilder = new GsonBuilder();
+					gsonBuilder.registerTypeAdapter(Opponent.class, opponentSerializer);
+					gsonBuilder.setLenient();
+					final Gson gson = gsonBuilder.create();
 
-				JsonReader jsonReader = gson.newJsonReader(bufferedReader);
-				Opponent opponent = gson.fromJson(jsonReader, Opponent.class);
-				opponents.add(opponent);
+					JsonReader jsonReader = gson.newJsonReader(bufferedReader);
+					Opponent opponent = gson.fromJson(jsonReader, Opponent.class);
+					opponents.add(opponent);
+					is.close();
+				}
 			}
 			return opponents;
 		});

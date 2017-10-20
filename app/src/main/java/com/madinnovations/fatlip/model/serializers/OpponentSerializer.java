@@ -27,9 +27,13 @@ import com.madinnovations.fatlip.model.Opponent;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Json serializer and deserializer for the {@link Opponent} entities
  */
+@Singleton
 public class OpponentSerializer extends TypeAdapter<Opponent> {
 	private static final String NAME = "name";
 	private static final String LEFT_EYE = "leftEye";
@@ -37,6 +41,13 @@ public class OpponentSerializer extends TypeAdapter<Opponent> {
 	private static final String NOSE = "nose";
 	private static final String MOUTH = "mouth";
 	private static final String FILE_NAME = "fileName";
+
+	/**
+	 * Creates a new OpponentSerializer instance
+	 */
+	@Inject
+	public OpponentSerializer() {
+	}
 
 	@Override
 	public void write(JsonWriter out, Opponent value) throws IOException {

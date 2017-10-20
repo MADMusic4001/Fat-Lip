@@ -16,6 +16,7 @@
 package com.madinnovations.fatlip.view.di.modules;
 
 import com.madinnovations.fatlip.view.activities.FatLipGame;
+import com.madinnovations.fatlip.view.activities.FileSelectorDialogFragment;
 import com.madinnovations.fatlip.view.di.PerActivity;
 
 import dagger.Module;
@@ -28,13 +29,21 @@ import dagger.Provides;
 @Module
 public class ActivityModule {
 	private FatLipGame fatLipGame;
+	private FileSelectorDialogFragment fileSelectorDialogFragment;
 
 	public ActivityModule(FatLipGame fatLipGame) {
 		this.fatLipGame = fatLipGame;
+	}
+	public ActivityModule(FileSelectorDialogFragment fileSelectorDialogFragment) {
+		this.fileSelectorDialogFragment = fileSelectorDialogFragment;
 	}
 
 	@Provides @PerActivity
 	FatLipGame provideFatLipGame() {
 		return this.fatLipGame;
+	}
+	@Provides @PerActivity
+	FileSelectorDialogFragment provideFileSelectorDialogFragment() {
+		return this.fileSelectorDialogFragment;
 	}
 }

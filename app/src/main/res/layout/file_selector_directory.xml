@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+  <ImageView
+      android:id="@+id/fs_image_view"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="start"
+      android:contentDescription="@string/folder_image"
+      android:src="@drawable/folder"/>
+  <CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+                   android:id="@+id/fs_checked_textview"
+                   android:layout_width="0dp"
+                   android:layout_height="match_parent"
+                   android:minHeight="?android:attr/listPreferredItemHeight"
+                   android:textAppearance="?android:attr/textAppearanceLarge"
+                   android:textColor="?android:attr/textColorAlertDialogListItem"
+                   android:layout_gravity="end"
+                   android:layout_weight="1"
+                   android:paddingLeft="12dp"
+                   android:paddingStart="12dp"
+                   android:paddingRight="7dp"
+                   android:paddingEnd="7dp"
+                   android:checkMark="?android:attr/listChoiceIndicatorSingle"
+                   android:ellipsize="marquee"
+      />
+</LinearLayout>

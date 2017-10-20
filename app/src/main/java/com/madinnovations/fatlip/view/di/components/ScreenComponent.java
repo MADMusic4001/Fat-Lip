@@ -19,16 +19,12 @@
 package com.madinnovations.fatlip.view.di.components;
 
 import com.madinnovations.fatlip.view.di.PerActivity;
-import com.madinnovations.fatlip.view.di.modules.ActivityModule;
-import com.madinnovations.fatlip.view.di.modules.ApplicationModule;
 import com.madinnovations.fatlip.view.di.modules.ScreenModule;
-import com.madinnovations.fatlip.view.screens.LoadingScreen;
 import com.madinnovations.fatlip.view.screens.HomeScreen;
+import com.madinnovations.fatlip.view.screens.ImportOpponentScreen;
+import com.madinnovations.fatlip.view.screens.LoadingScreen;
 import com.madinnovations.fatlip.view.screens.SetupScreen;
 
-import javax.inject.Singleton;
-
-import dagger.Component;
 import dagger.Subcomponent;
 
 /**
@@ -38,6 +34,7 @@ import dagger.Subcomponent;
 @Subcomponent(modules = {ScreenModule.class})
 public interface ScreenComponent {
 	void injectInto(HomeScreen homeScreen);
+	void injectInto(ImportOpponentScreen importOpponentScreen);
 	void injectInto(LoadingScreen loadingScreen);
 	void injectInto(SetupScreen setupScreen);
 }

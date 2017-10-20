@@ -18,6 +18,7 @@ package com.madinnovations.fatlip.view.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.BillingClient.FeatureType;
@@ -31,6 +32,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -227,7 +229,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 	 * Handles the purchase
 	 * <p>Note: Notice that for each purchase, we check if signature is valid on the client.
 	 * It's recommended to move this check into your backend.
-	 * See {@link Security#verifyPurchase(String, String, String)}
+	 * See {@link com.madinnovations.fatlip.view.utils.Security#verifyPurchase(String, String, String)}
 	 * </p>
 	 * @param purchase Purchase to be handled
 	 */
@@ -363,7 +365,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 		}
 
 		try {
-			return Security.verifyPurchase(BASE_64_ENCODED_PUBLIC_KEY, signedData, signature);
+			return com.madinnovations.fatlip.view.utils.Security.verifyPurchase(BASE_64_ENCODED_PUBLIC_KEY, signedData, signature);
 		} catch (IOException e) {
 			Log.e(TAG, "Got an exception trying to validate a purchase: " + e);
 			return false;

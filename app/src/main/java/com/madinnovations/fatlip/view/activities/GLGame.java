@@ -52,6 +52,9 @@ import com.madinnovations.fatlip.controller.framework.impl.AndroidFileIO;
 import com.madinnovations.fatlip.controller.framework.impl.AndroidInput;
 import com.madinnovations.fatlip.model.framework.Audio;
 import com.madinnovations.fatlip.model.framework.impl.AndroidAudio;
+import com.madinnovations.fatlip.view.FatLipApp;
+import com.madinnovations.fatlip.view.di.components.ActivityComponent;
+import com.madinnovations.fatlip.view.di.modules.ActivityModule;
 import com.madinnovations.fatlip.view.framework.Screen;
 
 import java.util.Stack;
@@ -88,10 +91,15 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 	private GLGameState state = GLGameState.Initialized;
 	private final Object stateChanged = new Object();
 	private long startTime = System.nanoTime();
+	private ActivityComponent activityComponent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		activityComponent = ((FatLipApp) getApplication()).getApplicationComponent()
+				.newActivityComponent(new ActivityModule((FatLipGame)this));
+		activityComponent.injectInto((FatLipGame)this);
+
 		resolvingError = savedInstanceState != null && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -357,5 +365,9 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 		public void onDismiss(DialogInterface dialog) {
 			((GLGame)getActivity()).onDialogDismissed();
 		}
+	}
+
+	public ActivityComponent getActivityComponent() {
+		return activityComponent;
 	}
 }

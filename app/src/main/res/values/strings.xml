@@ -27,4 +27,9 @@
   <string name="select_scenery">Select your scenery</string>
   <string name="start">Start</string>
   <string name="back">Back</string>
+  <string name="select_file">Select file:</string>
+  <string name="ellipsis">&#8230;</string>
+  <string name="alert_fs_title">Choose a %1$s file:\nCurrent Path = %2$s</string>
+  <string name="folder_image">Folder Image</string>
+  <string name="import_opponent">Import Opponent</string>
 </resources>

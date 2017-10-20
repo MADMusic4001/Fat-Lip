@@ -16,6 +16,7 @@
 package com.madinnovations.fatlip.view.di.components;
 
 import com.madinnovations.fatlip.view.activities.FatLipGame;
+import com.madinnovations.fatlip.view.activities.FileSelectorDialogFragment;
 import com.madinnovations.fatlip.view.di.PerActivity;
 import com.madinnovations.fatlip.view.di.modules.ActivityModule;
 
@@ -27,5 +28,7 @@ import dagger.Subcomponent;
 @PerActivity
 @Subcomponent(modules = ActivityModule.class)
 public interface ActivityComponent {
+
 	void injectInto(FatLipGame fatLipGame);
+	void injectInto(FileSelectorDialogFragment fsDialogFragment);
 }

@@ -21,4 +21,6 @@
   <color name="colorPrimary">#3F51B5</color>
   <color name="colorPrimaryDark">#303F9F</color>
   <color name="colorAccent">#FF4081</color>
+  <color name="list_odd_row_background">#30202020</color>
+  <color name="list_even_row_background">#30404040</color>
 </resources>

@@ -38,13 +38,14 @@ import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.framework.Screen;
 
 /**
- *
+ * Renders the Home screen
  */
 @SuppressWarnings("WeakerAccess")
 public class HomeScreen extends Screen {
 	private ConstraintLayout homeScreenLayout;
 	private Button playButton;
 	private Button helpButton;
+	private Button importOpponentButton;
 	private ListView highScoresListview;
 
 	public HomeScreen(final Game game) {
@@ -61,6 +62,8 @@ public class HomeScreen extends Screen {
 				initPlayButton();
 				helpButton = ((GLGame)game).findViewById(R.id.help_button);
 				initHelpButton();
+				importOpponentButton = ((GLGame)game).findViewById(R.id.import_opponent_button);
+				initImportOpponentButton();
 				highScoresListview = ((GLGame)game).findViewById(R.id.high_scores_listview);
 				initHighScoresList();
 				((GLGame)game).getGlView().setVisibility(View.GONE);
@@ -126,6 +129,25 @@ public class HomeScreen extends Screen {
 						((GLGame)game).getParentLayout().removeView(homeScreenLayout);
 						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 						game.setScreen(new HelpScreen(game), true);
+						if(Settings.soundEnabled) {
+							Assets.click.play(1);
+						}
+					}
+				});
+			}
+		});
+	}
+
+	private void initImportOpponentButton() {
+		importOpponentButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				((GLGame)game).runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+						game.setScreen(new ImportOpponentScreen(game), true);
 						if(Settings.soundEnabled) {
 							Assets.click.play(1);
 						}

@@ -19,7 +19,6 @@
 package com.madinnovations.fatlip.controller.rxhandlers;
 
 import android.content.res.AssetManager;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,7 +27,6 @@ import com.madinnovations.fatlip.model.Opponent;
 import com.madinnovations.fatlip.model.serializers.OpponentSerializer;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -62,7 +60,6 @@ public class OpponentRxHandler {
 			String[] opponentFileNames = assetManager.list("opponents");
 			List<Opponent> opponents = new ArrayList<>();
 			for(String opponentFileName : opponentFileNames) {
-				Log.d(TAG, "call: opponentFileName = " + opponentFileName);
 				if(opponentFileName.endsWith("json")) {
 					InputStream is = assetManager.open("opponents/" + opponentFileName);
 					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));

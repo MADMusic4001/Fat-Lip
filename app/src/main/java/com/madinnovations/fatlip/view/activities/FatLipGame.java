@@ -17,8 +17,8 @@ package com.madinnovations.fatlip.view.activities;
 
 import android.os.Bundle;
 
-import com.madinnovations.fatlip.view.di.components.ActivityComponent;
 import com.madinnovations.fatlip.view.framework.Screen;
+import com.madinnovations.fatlip.view.screens.ImportOpponentScreen;
 import com.madinnovations.fatlip.view.screens.LoadingScreen;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -28,9 +28,8 @@ import javax.microedition.khronos.opengles.GL10;
  * The game Activity
  */
 @SuppressWarnings("unused")
-public class FatLipGame extends GLGame {
+public class FatLipGame extends GLGame implements FileSelectorDialogFragment.FileSelectorDialogListener {
 	private static final String TAG = "FatLipGame";
-	private ActivityComponent activityComponent;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +46,14 @@ public class FatLipGame extends GLGame {
 		super.onSurfaceCreated(unused, config);
 	}
 
-	public ActivityComponent getActivityComponent() {
-		return activityComponent;
+	@Override
+	public void onFileSelected(String fileName) {
+		if(fileName != null) {
+			if(fileName.endsWith(ImportOpponentScreen.BITMAP_FILE_EXTENSION)) {
+			}
+			else {
+			}
+		}
 	}
+
 }

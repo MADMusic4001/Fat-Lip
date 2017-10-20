@@ -19,6 +19,7 @@
 package com.madinnovations.fatlip.view.di.modules;
 
 import com.madinnovations.fatlip.view.di.PerActivity;
+import com.madinnovations.fatlip.view.screens.ImportOpponentScreen;
 import com.madinnovations.fatlip.view.screens.SetupScreen;
 
 import dagger.Module;
@@ -30,12 +31,20 @@ import dagger.Provides;
 @PerActivity
 @Module
 public class ScreenModule {
-	private SetupScreen setupScreen;
+	private ImportOpponentScreen importOpponentScreen;
+	private SetupScreen          setupScreen;
 
+	public ScreenModule(ImportOpponentScreen importOpponentScreen) {
+		this.importOpponentScreen = importOpponentScreen;
+	}
 	public ScreenModule(SetupScreen setupScreen) {
 		this.setupScreen = setupScreen;
 	}
 
+	@Provides @PerActivity
+	ImportOpponentScreen provideImportOpponentScreen() {
+		return this.importOpponentScreen;
+	}
 	@Provides @PerActivity
 	SetupScreen provideSetupScreen() {
 		return this.setupScreen;

@@ -23,6 +23,7 @@ import com.madinnovations.fatlip.view.screens.GameScreen;
 import com.madinnovations.fatlip.view.screens.HelpScreen;
 import com.madinnovations.fatlip.view.screens.HomeScreen;
 import com.madinnovations.fatlip.view.screens.ImportOpponentScreen;
+import com.madinnovations.fatlip.view.screens.ImportSceneryScreen;
 import com.madinnovations.fatlip.view.screens.LoadingScreen;
 import com.madinnovations.fatlip.view.screens.SetupScreen;
 
@@ -40,6 +41,7 @@ public class ScreenModule {
 	private HelpScreen           helpScreen;
 	private HomeScreen           homeScreen;
 	private ImportOpponentScreen importOpponentScreen;
+	private ImportSceneryScreen  importSceneryScreen;
 	private LoadingScreen        loadingScreen;
 	private SetupScreen          setupScreen;
 
@@ -54,6 +56,9 @@ public class ScreenModule {
 	}
 	public ScreenModule(ImportOpponentScreen importOpponentScreen) {
 		this.importOpponentScreen = importOpponentScreen;
+	}
+	public ScreenModule(ImportSceneryScreen importSceneryScreen) {
+		this.importSceneryScreen = importSceneryScreen;
 	}
 	public ScreenModule(LoadingScreen loadingScreen) {
 		this.loadingScreen = loadingScreen;
@@ -77,6 +82,10 @@ public class ScreenModule {
 	@Provides @PerActivity
 	ImportOpponentScreen provideImportOpponentScreen() {
 		return this.importOpponentScreen;
+	}
+	@Provides @PerActivity
+	ImportSceneryScreen provideImportSceneryScreen() {
+		return this.importSceneryScreen;
 	}
 	@Provides @PerActivity
 	LoadingScreen provideLoadingScreen() {

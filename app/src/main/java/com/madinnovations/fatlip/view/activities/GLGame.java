@@ -34,9 +34,12 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -127,6 +130,7 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 //			GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
 //					.requestProfile()
 //					.build();
+//			Log.d(TAG, "onStart: options built");
 //			GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
 //					.addConnectionCallbacks(this)
 //					.addOnConnectionFailedListener(this)
@@ -135,9 +139,18 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 //					.addApi(Wallet.API)
 //					.addScope(Games.SCOPE_GAMES)
 //					.build();
-//			Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-//			startActivityForResult(signInIntent, RC_SIGN_IN);
-//			googleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL);
+//			Log.d(TAG, "onStart: client built");
+//			if(!googleApiClient.isConnected()) {
+//				Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+//				Log.d(TAG, "onStart: intent created");
+//				startActivityForResult(signInIntent, RC_SIGN_IN);
+//				Log.d(TAG, "onStart: sign in activity started");
+//				googleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL);
+//				Log.d(TAG, "onStart: client connected");
+//			}
+//			else {
+//				Log.d(TAG, "onStart: already signed in");
+//			}
 //		}
 	}
 
@@ -281,6 +294,12 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	resolvingError = false;
+    	if(requestCode == RC_SIGN_IN) {
+			GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+			if(result.isSuccess()) {
+				Toast.makeText(this, R.string.sign_in_success, Toast.LENGTH_LONG).show();
+			}
+		}
 	}
 
 	private void initBilling() {

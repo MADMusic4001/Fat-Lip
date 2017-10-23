@@ -35,6 +35,7 @@
   <string name="alert_fs_title">Choose a %1$s file:\nCurrent Path = %2$s</string>
   <string name="folder_image">Folder Image</string>
   <string name="import_opponent">Import Opponent</string>
+  <string name="import_scenery">Import Scenery</string>
   <string name="import_failure">Import Failure</string>
   <string name="size_error">The image size must be 512x512</string>
   <string name="no_face">No face found in the image</string>
@@ -46,4 +47,6 @@
   <string name="save_success">Your opponent was successfully saved.</string>
   <string name="save_error">An error occurred when attempting to save your opponent.</string>
   <string name="not_png">The image must be a .png file.</string>
+  <string name="sign_in_success">You are now signed in to your Google account.</string>
+  <string name="sign_in_fail">We were unable to sign in to a Google account. Please try again.</string>
 </resources>

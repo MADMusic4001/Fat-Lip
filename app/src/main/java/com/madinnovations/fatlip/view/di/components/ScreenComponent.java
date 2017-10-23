@@ -24,6 +24,7 @@ import com.madinnovations.fatlip.view.screens.GameScreen;
 import com.madinnovations.fatlip.view.screens.HelpScreen;
 import com.madinnovations.fatlip.view.screens.HomeScreen;
 import com.madinnovations.fatlip.view.screens.ImportOpponentScreen;
+import com.madinnovations.fatlip.view.screens.ImportSceneryScreen;
 import com.madinnovations.fatlip.view.screens.LoadingScreen;
 import com.madinnovations.fatlip.view.screens.SetupScreen;
 
@@ -39,6 +40,7 @@ public interface ScreenComponent {
 	void injectInto(HelpScreen helpScreen);
 	void injectInto(HomeScreen homeScreen);
 	void injectInto(ImportOpponentScreen importOpponentScreen);
+	void injectInto(ImportSceneryScreen importSceneryScreen);
 	void injectInto(LoadingScreen loadingScreen);
 	void injectInto(SetupScreen setupScreen);
 }

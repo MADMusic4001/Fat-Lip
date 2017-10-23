@@ -46,28 +46,28 @@ public class HomeScreen extends Screen {
 	private Button playButton;
 	private Button helpButton;
 	private Button importOpponentButton;
+	private Button importSceneryButton;
 	private ListView highScoresListview;
 
+	@SuppressLint("InflateParams")
 	public HomeScreen(final Game game) {
 		super(game);
-		((GLGame)game).runOnUiThread(new Runnable() {
-			@SuppressLint("InflateParams")
-			@Override
-			public void run() {
-				LinearLayout parentLayout = ((GLGame)game).getParentLayout();
-				homeScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.home_screen,
-						null);
-				parentLayout.addView(homeScreenLayout);
-				playButton = ((GLGame)game).findViewById(R.id.play_button);
-				initPlayButton();
-				helpButton = ((GLGame)game).findViewById(R.id.help_button);
-				initHelpButton();
-				importOpponentButton = ((GLGame)game).findViewById(R.id.import_opponent_button);
-				initImportOpponentButton();
-				highScoresListview = ((GLGame)game).findViewById(R.id.high_scores_listview);
-				initHighScoresList();
-				((GLGame)game).getGlView().setVisibility(View.GONE);
-			}
+		((GLGame)game).runOnUiThread(() -> {
+			LinearLayout parentLayout = ((GLGame)game).getParentLayout();
+			homeScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.home_screen,
+					null);
+			parentLayout.addView(homeScreenLayout);
+			playButton = ((GLGame)game).findViewById(R.id.play_button);
+			initPlayButton();
+			helpButton = ((GLGame)game).findViewById(R.id.help_button);
+			initHelpButton();
+			importOpponentButton = ((GLGame)game).findViewById(R.id.import_opponent_button);
+			initImportOpponentButton();
+			importSceneryButton = ((GLGame)game).findViewById(R.id.import_scenery_button);
+			initImportSceneryButton();
+			highScoresListview = ((GLGame)game).findViewById(R.id.high_scores_listview);
+			initHighScoresList();
+			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 
@@ -101,60 +101,47 @@ public class HomeScreen extends Screen {
 	}
 
 	private void initPlayButton() {
-		playButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				((GLGame)game).runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((GLGame)game).getParentLayout().removeView(homeScreenLayout);
-						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
-						game.setScreen(new SetupScreen(game), true);
-						if(Settings.soundEnabled) {
-							Assets.click.play(1);
-						}
-					}
-				});
+		playButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+			game.setScreen(new SetupScreen(game), true);
+			if(Settings.soundEnabled) {
+				Assets.click.play(1);
 			}
-		});
+		}));
 	}
 
 	private void initHelpButton() {
-		helpButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				((GLGame)game).runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((GLGame)game).getParentLayout().removeView(homeScreenLayout);
-						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
-						game.setScreen(new HelpScreen(game), true);
-						if(Settings.soundEnabled) {
-							Assets.click.play(1);
-						}
-					}
-				});
+		helpButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+			game.setScreen(new HelpScreen(game), true);
+			if(Settings.soundEnabled) {
+				Assets.click.play(1);
 			}
-		});
+		}));
 	}
 
 	private void initImportOpponentButton() {
-		importOpponentButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				((GLGame)game).runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((GLGame)game).getParentLayout().removeView(homeScreenLayout);
-						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
-						game.setScreen(new ImportOpponentScreen(game), true);
-						if(Settings.soundEnabled) {
-							Assets.click.play(1);
-						}
-					}
-				});
+		importOpponentButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+			game.setScreen(new ImportOpponentScreen(game), true);
+			if(Settings.soundEnabled) {
+				Assets.click.play(1);
 			}
-		});
+		}));
+	}
+
+	private void initImportSceneryButton() {
+		importSceneryButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+			game.setScreen(new ImportSceneryScreen(game), true);
+			if(Settings.soundEnabled) {
+				Assets.click.play(1);
+			}
+		}));
 	}
 
 	private void initHighScoresList() {

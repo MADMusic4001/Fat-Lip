@@ -25,7 +25,9 @@ import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.Landmark;
 import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.Game;
+import com.madinnovations.fatlip.controller.framework.Settings;
 import com.madinnovations.fatlip.controller.rxhandlers.OpponentRxHandler;
+import com.madinnovations.fatlip.model.Assets;
 import com.madinnovations.fatlip.model.Opponent;
 import com.madinnovations.fatlip.view.FatLipApp;
 import com.madinnovations.fatlip.view.activities.FatLipGame;
@@ -290,11 +292,15 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 	}
 
 	private void initBackButton() {
-		backButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-
-			}
-		});
+		backButton.setOnClickListener(v -> (
+				(GLGame)game).runOnUiThread(() -> {
+					((GLGame)game).getParentLayout().removeView(importOpponentScreenLayout);
+					((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+					game.setScreen(new HomeScreen(game), true);
+					if(Settings.soundEnabled) {
+						Assets.click.play(1);
+					}
+				})
+		);
 	}
 }

@@ -19,10 +19,7 @@
 package com.madinnovations.fatlip.view.screens;
 
 import android.annotation.SuppressLint;
-import android.graphics.PointF;
-import android.graphics.RectF;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.widget.Button;
@@ -30,20 +27,10 @@ import android.widget.LinearLayout;
 
 import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.Game;
-import com.madinnovations.fatlip.controller.framework.Input;
 import com.madinnovations.fatlip.controller.framework.Settings;
 import com.madinnovations.fatlip.model.Assets;
-import com.madinnovations.fatlip.model.GLText;
 import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.framework.Screen;
-import com.madinnovations.fatlip.view.programs.TextShaderProgram;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.opengl.GLES20.glViewport;
-import static com.madinnovations.fatlip.view.utils.Geometry.getWorldFromScreen;
-import static com.madinnovations.fatlip.view.utils.Geometry.inBounds;
 
 /**
  * Renders the help screen
@@ -59,20 +46,17 @@ public class HelpScreen extends Screen {
 	 *
 	 * @param game  a (@link Game} instance
 	 */
+	@SuppressLint("InflateParams")
 	public HelpScreen(final Game game) {
 		super(game);
-		((GLGame)game).runOnUiThread(new Runnable() {
-			@SuppressLint("InflateParams")
-			@Override
-			public void run() {
-				LinearLayout parentLayout = ((GLGame)game).getParentLayout();
-				helpScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.help_screen,
-																								null);
-				parentLayout.addView(helpScreenLayout);
-				backButton = ((GLGame)game).findViewById(R.id.back_button);
-				initBackButton();
-				((GLGame)game).getGlView().setVisibility(View.GONE);
-			}
+		((GLGame)game).runOnUiThread(() -> {
+			LinearLayout parentLayout = ((GLGame)game).getParentLayout();
+			helpScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.help_screen,
+																							null);
+			parentLayout.addView(helpScreenLayout);
+			backButton = ((GLGame)game).findViewById(R.id.back_button);
+			initBackButton();
+			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 
@@ -100,21 +84,13 @@ public class HelpScreen extends Screen {
 	public void dispose() { }
 
 	private void initBackButton() {
-		backButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				((GLGame)game).runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((GLGame)game).getParentLayout().removeView(helpScreenLayout);
-						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
-						game.setScreen(new HomeScreen(game), true);
-						if(Settings.soundEnabled) {
-							Assets.click.play(1);
-						}
-					}
-				});
+		backButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(helpScreenLayout);
+			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+			game.setScreen(new HomeScreen(game), true);
+			if(Settings.soundEnabled) {
+				Assets.click.play(1);
 			}
-		});
+		}));
 	}
 }

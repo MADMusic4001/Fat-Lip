@@ -17,8 +17,16 @@
  */
 package com.madinnovations.fatlip;
 
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
+
+@SuppressWarnings("unused")
 public class Constants {
-    public static final int BYTES_PER_SHORT = 2;
+	private static final String TAG = "Constants";
+	public static final int BYTES_PER_SHORT = 2;
     public static final int BYTES_PER_FLOAT = 4;
     public static final String HIGH_SCORES_PREFS_NAME = "High_Scores";
     public static final String HIGH_SCORE_1 = "highScore1";
@@ -26,4 +34,53 @@ public class Constants {
     public static final String HIGH_SCORE_3 = "highScore3";
     public static final String HIGH_SCORE_4 = "highScore4";
     public static final String HIGH_SCORE_5 = "highScore5";
+
+	/**
+	 * Gets the starting import directory to use. ExternalFiles/Documents.
+	 *
+	 * @return the File representing the directory or n
+	 */
+	public static File getImportDir(Context context) {
+		File dir;
+		dir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+		if(dir == null || !dir.exists()) {
+			Log.e("RMU", "Directory not created");
+			throw new RuntimeException("Error creating output directory");
+		}
+		return dir;
+	}
+
+	/**
+	 * Gets the opponents output directory to use. {InternalFiles}/opponents.
+	 *
+	 * @return the File representing the directory or n
+	 */
+	public static File getOpponentsOutputDir(Context context) {
+		File dir;
+		dir = new File(context.getFilesDir(), "opponents");
+		if(!dir.exists()) {
+			if(!dir.mkdir()) {
+				Log.e(TAG, "Opponents directory not created");
+				throw new RuntimeException("Error creating output directory");
+			}
+		}
+		return dir;
+	}
+
+	/**
+	 * Gets the output directory to use for custom scenery. {InternalFiles}/scenery.
+	 *
+	 * @return the File representing the directory or n
+	 */
+	public static File getSceneryOutputDir(Context context) {
+		File dir;
+		dir = new File(context.getFilesDir(), "scenery");
+		if(!dir.exists()) {
+			if(!dir.mkdir()) {
+				Log.e(TAG, "Scenery directory not created");
+				throw new RuntimeException("Error creating scenery output directory");
+			}
+		}
+		return dir;
+	}
 }

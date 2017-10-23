@@ -19,29 +19,44 @@
 package com.madinnovations.fatlip.controller.rxhandlers;
 
 import android.content.res.AssetManager;
+import android.os.Build;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.madinnovations.fatlip.Constants;
 import com.madinnovations.fatlip.model.Opponent;
 import com.madinnovations.fatlip.model.serializers.OpponentSerializer;
+import com.madinnovations.fatlip.view.FatLipApp;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 /**
  * ReactiveX handler that reads and writes opponents.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class OpponentRxHandler {
 	private static final String TAG = "OpponentRxHandler";
-	private AssetManager assetManager;
+	private FatLipApp          fatLipApp;
+	private AssetManager       assetManager;
 	private OpponentSerializer opponentSerializer;
 
 	/**
@@ -50,7 +65,8 @@ public class OpponentRxHandler {
 	 * @param assetManager the {@link AssetManager} instance
 	 */
 	@Inject
-	public OpponentRxHandler(AssetManager assetManager, OpponentSerializer opponentSerializer) {
+	public OpponentRxHandler(FatLipApp fatLipApp, AssetManager assetManager, OpponentSerializer opponentSerializer) {
+		this.fatLipApp = fatLipApp;
 		this.assetManager = assetManager;
 		this.opponentSerializer = opponentSerializer;
 	}
@@ -75,6 +91,54 @@ public class OpponentRxHandler {
 				}
 			}
 			return opponents;
+		});
+	}
+
+	public Completable saveOpponent(Opponent opponent, String sourceImageFilePath) {
+		return Completable.fromCallable(() -> {
+			File dir = Constants.getOpponentsOutputDir(fatLipApp);
+			String jsonFileName = opponent.getImageFileName().replace("png", "json");
+			File jsonFile = new File(dir, jsonFileName);
+			if(!jsonFile.exists()) {
+				jsonFile.createNewFile();
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(jsonFile));
+			final GsonBuilder gsonBuilder = new GsonBuilder();
+			gsonBuilder.registerTypeAdapter(Opponent.class, opponentSerializer);
+			gsonBuilder.setLenient();
+			final Gson gson = gsonBuilder.create();
+			JsonWriter jsonWriter = gson.newJsonWriter(writer);
+			jsonWriter.jsonValue(gson.toJson(opponent));
+			jsonWriter.flush();
+			jsonWriter.close();
+
+			Log.d(TAG, "sourceImageFilePath = " + sourceImageFilePath);
+			File sourceFile = new File(sourceImageFilePath);
+			File destinationFile = new File(dir, opponent.getImageFileName());
+			if(!destinationFile.exists()) {
+				destinationFile.createNewFile();
+			}
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				Files.copy(sourceFile.toPath(), destinationFile.toPath());
+			}
+			else {
+				FileChannel inputChannel = null;
+				FileChannel outputChannel = null;
+				try {
+					inputChannel = new FileInputStream(sourceFile).getChannel();
+					outputChannel = new FileOutputStream(destinationFile).getChannel();
+					outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+				}
+				finally {
+					if(inputChannel != null) {
+						inputChannel.close();
+					}
+					if(outputChannel != null) {
+						outputChannel.close();
+					}
+				}
+			}
+			return true;
 		});
 	}
 }

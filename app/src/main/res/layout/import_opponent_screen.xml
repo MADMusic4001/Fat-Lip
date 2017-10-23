@@ -27,31 +27,55 @@
       android:layout_height="wrap_content"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintLeft_toLeftOf="parent"
-      app:layout_constraintRight_toLeftOf="@+id/select_file_edit"
-      app:layout_constraintBottom_toTopOf="@+id/opponent_imageview"
+      app:layout_constraintRight_toLeftOf="@+id/name_edit"
+      app:layout_constraintBottom_toTopOf="@+id/select_file_button"
+      app:layout_constraintVertical_chainStyle="spread"
       android:text="@string/select_file"/>
   <EditText
-      android:id="@id/select_file_edit"
+      android:id="@id/name_edit"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:minWidth="200dp"
+      android:inputType="text"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintLeft_toRightOf="@id/select_file_textview"
-      app:layout_constraintRight_toLeftOf="@+id/select_file_button"/>
+      app:layout_constraintRight_toRightOf="parent"/>
+
   <Button
       android:id="@id/select_file_button"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintLeft_toRightOf="@id/select_file_edit"
-      app:layout_constraintRight_toRightOf="parent"
-      android:text="@string/ellipsis"/>
-
-  <ImageView
-      android:id="@id/opponent_imageview"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       app:layout_constraintTop_toBottomOf="@id/select_file_textview"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"/>
+      app:layout_constraintBottom_toTopOf="@+id/face_view"
+      android:text="@string/ellipsis"/>
+
+  <com.madinnovations.fatlip.view.views.FaceView
+      android:id="@id/face_view"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/select_file_button"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintBottom_toTopOf="@+id/back_button"/>
+
+  <Button
+      android:id="@id/back_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/face_view"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/save_button"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:text="@string/back"/>
+  <Button
+      android:id="@id/save_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/face_view"
+      app:layout_constraintLeft_toRightOf="@id/back_button"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:text="@string/save"/>
 </android.support.constraint.ConstraintLayout>

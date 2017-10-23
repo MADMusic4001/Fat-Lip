@@ -28,7 +28,7 @@ import javax.microedition.khronos.opengles.GL10;
  * The game Activity
  */
 @SuppressWarnings("unused")
-public class FatLipGame extends GLGame implements FileSelectorDialogFragment.FileSelectorDialogListener {
+public class FatLipGame extends GLGame {
 	private static final String TAG = "FatLipGame";
 
 	@Override
@@ -45,15 +45,4 @@ public class FatLipGame extends GLGame implements FileSelectorDialogFragment.Fil
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		super.onSurfaceCreated(unused, config);
 	}
-
-	@Override
-	public void onFileSelected(String fileName) {
-		if(fileName != null) {
-			if(fileName.endsWith(ImportOpponentScreen.BITMAP_FILE_EXTENSION)) {
-			}
-			else {
-			}
-		}
-	}
-
 }

@@ -26,7 +26,7 @@ import android.widget.CheckedTextView;
 import android.widget.ImageView;
 
 import com.madinnovations.fatlip.R;
-import com.madinnovations.fatlip.view.utils.FileInfo;
+import com.madinnovations.fatlip.model.FileInfo;
 
 /**
  * ${CLASS_DESCRIPTION}

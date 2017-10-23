@@ -20,6 +20,8 @@ package com.madinnovations.fatlip.view.di.components;
 
 import com.madinnovations.fatlip.view.di.PerActivity;
 import com.madinnovations.fatlip.view.di.modules.ScreenModule;
+import com.madinnovations.fatlip.view.screens.GameScreen;
+import com.madinnovations.fatlip.view.screens.HelpScreen;
 import com.madinnovations.fatlip.view.screens.HomeScreen;
 import com.madinnovations.fatlip.view.screens.ImportOpponentScreen;
 import com.madinnovations.fatlip.view.screens.LoadingScreen;
@@ -33,6 +35,8 @@ import dagger.Subcomponent;
 @PerActivity
 @Subcomponent(modules = {ScreenModule.class})
 public interface ScreenComponent {
+	void injectInto(GameScreen gameScreen);
+	void injectInto(HelpScreen helpScreen);
 	void injectInto(HomeScreen homeScreen);
 	void injectInto(ImportOpponentScreen importOpponentScreen);
 	void injectInto(LoadingScreen loadingScreen);

@@ -37,13 +37,9 @@ import android.widget.LinearLayout;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.wallet.Wallet;
 import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.FileIO;
 import com.madinnovations.fatlip.controller.framework.Game;
@@ -120,28 +116,29 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 	@Override
 	protected void onStart() {
 		super.onStart();
-		GoogleApiAvailability instance = GoogleApiAvailability.getInstance();
-		int result = instance.isGooglePlayServicesAvailable(this);
-		if(result != ConnectionResult.SUCCESS) {
-			Dialog dialog = instance.getErrorDialog(this, result, PLAY_SERVICES_RESOLUTION_REQUEST);
-			dialog.show();
-		}
-		else {
-			GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-					.requestProfile()
-					.build();
-			GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
-					.addConnectionCallbacks(this)
-					.addOnConnectionFailedListener(this)
-					.addApi(Games.API)
-					.addApi(Auth.GOOGLE_SIGN_IN_API, options)
-					.addApi(Wallet.API)
-					.addScope(Games.SCOPE_GAMES)
-					.build();
-			Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-			startActivityForResult(signInIntent, RC_SIGN_IN);
-			googleApiClient.connect();
-		}
+//		GoogleApiAvailability instance = GoogleApiAvailability.getInstance();
+//		int result = instance.isGooglePlayServicesAvailable(this);
+//		if(result != ConnectionResult.SUCCESS) {
+//			Dialog dialog = instance.getErrorDialog(this, result, PLAY_SERVICES_RESOLUTION_REQUEST);
+//			dialog.show();
+//		}
+//		else {
+//			Log.d(TAG, "onStart: GooglePlayServices connected");
+//			GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+//					.requestProfile()
+//					.build();
+//			GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
+//					.addConnectionCallbacks(this)
+//					.addOnConnectionFailedListener(this)
+//					.addApi(Games.API)
+//					.addApi(Auth.GOOGLE_SIGN_IN_API, options)
+//					.addApi(Wallet.API)
+//					.addScope(Games.SCOPE_GAMES)
+//					.build();
+//			Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+//			startActivityForResult(signInIntent, RC_SIGN_IN);
+//			googleApiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL);
+//		}
 	}
 
 	@Override

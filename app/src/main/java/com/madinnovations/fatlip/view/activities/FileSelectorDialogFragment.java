@@ -26,8 +26,8 @@ import android.widget.TextView;
 
 import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.rxhandlers.FileRxHandler;
+import com.madinnovations.fatlip.model.FileInfo;
 import com.madinnovations.fatlip.view.adapters.FileSelectorAdapter;
-import com.madinnovations.fatlip.view.utils.FileInfo;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -35,17 +35,19 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import static com.madinnovations.fatlip.Constants.getImportDir;
+
 /**
  * UI for file selection dialog
  */
 public class FileSelectorDialogFragment extends DialogFragment {
 	private static final String FILE_SELECTOR_FILTER = "fs_extension_filter";
 	private static final String PARENT_DIR = "..";
-	private String						extension = ".rmu";
+	private String						 extension;
 	private   ArrayList<FileInfo>        fileList;
 	private   File                       path;
 	private   String                     chosenFile;
-	private   FileSelectorDialogListener listener;
+	private   FileSelectorDialogListener listener = null;
 	@Inject
 	protected FileRxHandler              fileRxHandler;
 
@@ -120,30 +122,22 @@ public class FileSelectorDialogFragment extends DialogFragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		((FatLipGame)activity).getActivityComponent().injectInto(this);
-		path = fileRxHandler.getImportExportDir();
+		path = getImportDir(activity);
 		try {
 			listener = (FileSelectorDialogListener) activity;
 		}
-		catch (ClassCastException ex) {
-			throw new ClassCastException(
-					activity.getClass().getName() + " must implement "
-							+ "FileSelectorDialogFragment.FileSelectorDialogListener.");
-		}
+		catch (ClassCastException ignored) {}
 	}
 
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
 		((FatLipGame)getActivity()).getActivityComponent().injectInto(this);
-		path = fileRxHandler.getImportExportDir();
+		path = getImportDir(context);
 		try {
 			listener = (FileSelectorDialogListener) context;
 		}
-		catch (ClassCastException ex) {
-			throw new ClassCastException(
-					context.getClass().getName() + " must implement "
-							+ "FileSelectorDialogFragment.FileSelectorDialogListener.");
-		}
+		catch (ClassCastException ignored) {}
 	}
 
 	public interface FileSelectorDialogListener {
@@ -171,5 +165,9 @@ public class FileSelectorDialogFragment extends DialogFragment {
 		else {
 			fileList = new ArrayList<>(0);
 		}
+	}
+
+	public void setListener(FileSelectorDialogListener listener) {
+		this.listener = listener;
 	}
 }

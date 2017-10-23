@@ -19,7 +19,11 @@
 package com.madinnovations.fatlip.view.di.modules;
 
 import com.madinnovations.fatlip.view.di.PerActivity;
+import com.madinnovations.fatlip.view.screens.GameScreen;
+import com.madinnovations.fatlip.view.screens.HelpScreen;
+import com.madinnovations.fatlip.view.screens.HomeScreen;
 import com.madinnovations.fatlip.view.screens.ImportOpponentScreen;
+import com.madinnovations.fatlip.view.screens.LoadingScreen;
 import com.madinnovations.fatlip.view.screens.SetupScreen;
 
 import dagger.Module;
@@ -28,22 +32,55 @@ import dagger.Provides;
 /**
  * The ScreenModule dependency injection class.
  */
+@SuppressWarnings("unused")
 @PerActivity
 @Module
 public class ScreenModule {
+	private GameScreen           gameScreen;
+	private HelpScreen           helpScreen;
+	private HomeScreen           homeScreen;
 	private ImportOpponentScreen importOpponentScreen;
+	private LoadingScreen        loadingScreen;
 	private SetupScreen          setupScreen;
 
+	public ScreenModule(GameScreen gameScreen) {
+		this.gameScreen = gameScreen;
+	}
+	public ScreenModule(HelpScreen helpScreen) {
+		this.helpScreen = helpScreen;
+	}
+	public ScreenModule(HomeScreen homeScreen) {
+		this.homeScreen = homeScreen;
+	}
 	public ScreenModule(ImportOpponentScreen importOpponentScreen) {
 		this.importOpponentScreen = importOpponentScreen;
+	}
+	public ScreenModule(LoadingScreen loadingScreen) {
+		this.loadingScreen = loadingScreen;
 	}
 	public ScreenModule(SetupScreen setupScreen) {
 		this.setupScreen = setupScreen;
 	}
 
 	@Provides @PerActivity
+	GameScreen provideGameScreen() {
+		return this.gameScreen;
+	}
+	@Provides @PerActivity
+	HelpScreen provideHelpScreen() {
+		return this.helpScreen;
+	}
+	@Provides @PerActivity
+	HomeScreen provideHomeScreen() {
+		return this.homeScreen;
+	}
+	@Provides @PerActivity
 	ImportOpponentScreen provideImportOpponentScreen() {
 		return this.importOpponentScreen;
+	}
+	@Provides @PerActivity
+	LoadingScreen provideLoadingScreen() {
+		return this.loadingScreen;
 	}
 	@Provides @PerActivity
 	SetupScreen provideSetupScreen() {

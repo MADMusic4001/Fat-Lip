@@ -18,6 +18,7 @@
 
 <resources>
   <string name="app_name">Fat Lip</string>
+  <string name="ok">OK</string>
   <string name="play">Play</string>
   <string name="help">Help</string>
   <string name="instructions">Throw objects at the faces to try to give them a fat lip before time runs out.</string>
@@ -27,9 +28,21 @@
   <string name="select_scenery">Select your scenery</string>
   <string name="start">Start</string>
   <string name="back">Back</string>
+  <string name="save">Save</string>
   <string name="select_file">Select file:</string>
   <string name="ellipsis">&#8230;</string>
   <string name="alert_fs_title">Choose a %1$s file:\nCurrent Path = %2$s</string>
   <string name="folder_image">Folder Image</string>
   <string name="import_opponent">Import Opponent</string>
+  <string name="import_failure">Import Failure</string>
+  <string name="size_error">The image size must be 512x512</string>
+  <string name="no_face">No face found in the image</string>
+  <string name="multiple_faces">The image must have only one face.</string>
+  <string name="face_too_small">The face in the image is too small</string>
+  <string name="not_two_eyes">Two eyes not found in the image</string>
+  <string name="no_mouth">No mouth found in the image</string>
+  <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
+  <string name="save_success">Your opponent was successfully saved.</string>
+  <string name="save_error">An error occurred when attempting to save your opponent.</string>
+  <string name="not_png">The image must be a .png file.</string>
 </resources>

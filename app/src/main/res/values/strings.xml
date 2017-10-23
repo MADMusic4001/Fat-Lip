@@ -18,6 +18,7 @@
 
 <resources>
   <string name="app_name">Fat Lip</string>
+  <string name="name">Name</string>
   <string name="ok">OK</string>
   <string name="play">Play</string>
   <string name="help">Help</string>

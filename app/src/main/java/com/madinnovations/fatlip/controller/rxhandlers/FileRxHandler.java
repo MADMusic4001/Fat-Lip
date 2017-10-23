@@ -25,9 +25,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.madinnovations.fatlip.Constants.getImportDir;
 import static com.madinnovations.fatlip.Constants.getOpponentsOutputDir;
@@ -56,72 +58,64 @@ public class FileRxHandler {
 	 * @param fileName  the name of the file to read.
 	 * @return an {@link Observable} instance that can be subscribed to in order to read text from a file.
 	 */
-	public Observable<String> readTextFile(final String fileName) {
-		return Observable.create(
-				(Observable.OnSubscribe<String>) subscriber -> {
-					FileInputStream inputStream = null;
+	public Single<String> readTextFile(final String fileName) {
+		return Single.fromCallable(() -> {
+			FileInputStream inputStream = null;
+			try {
+				File dir = getImportDir(context);
+				File file = new File(dir, fileName);
+				inputStream = new FileInputStream(file);
+				int size = inputStream.available();
+				byte[] buffer = new byte[size];
+				//noinspection ResultOfMethodCallIgnored
+				inputStream.read(buffer);
+				inputStream.close();
+				return new String(buffer, "UTF-8");
+			}
+			finally {
+				if(inputStream != null) {
 					try {
-						File dir = getImportDir(context);
-						File file = new File(dir, fileName);
-						inputStream = new FileInputStream(file);
-						int size = inputStream.available();
-						byte[] buffer = new byte[size];
-						//noinspection ResultOfMethodCallIgnored
-						inputStream.read(buffer);
 						inputStream.close();
-						subscriber.onNext(new String(buffer, "UTF-8"));
-						subscriber.onCompleted();
 					}
-					catch (Exception e) {
-						subscriber.onError(e);
-					}
-					finally {
-						if(inputStream != null) {
-							try {
-								inputStream.close();
-							}
-							catch (IOException ignored) {}
-						}
-					}
+					catch (IOException ignored) {}
 				}
-		).subscribeOn(Schedulers.io())
+			}
+		}).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
 	}
 
-	public Observable<Boolean> writeFile(@NonNull final File file, @NonNull final String data) {
-		return Observable.create(
-				(Observable.OnSubscribe<Boolean>) subscriber -> {
-					FileOutputStream outputStream = null;
+	public Completable writeFile(@NonNull final File file, @NonNull final String data) {
+		return Completable.fromCallable(() -> {
+			FileOutputStream outputStream = null;
+			try {
+				outputStream = new FileOutputStream(file);
+				outputStream.write(data.getBytes());
+				outputStream.close();
+				return true;
+			}
+			catch (Exception e) {
+				return false;
+			}
+			finally {
+				if (outputStream != null) {
 					try {
-						outputStream = new FileOutputStream(file);
-						outputStream.write(data.getBytes());
 						outputStream.close();
-						subscriber.onNext(true);
-						subscriber.onCompleted();
 					}
-					catch (Exception e) {
-						subscriber.onError(e);
-					}
-					finally {
-						if(outputStream != null) {
-							try {
-								outputStream.close();
-							}
-							catch (IOException ignored) {}
-						}
+					catch (IOException ignored) {
 					}
 				}
-		).subscribeOn(Schedulers.io())
+			}
+		}).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
 	}
 
-	public Observable<Boolean> writeOpponentFile(@NonNull final String fileName, @NonNull final String data) {
+	public Completable writeOpponentFile(@NonNull final String fileName, @NonNull final String data) {
 		File dir = getOpponentsOutputDir(context);
 		File file = new File(dir, fileName);
 		return writeFile(file, data);
 	}
 
-	public Observable<Boolean> writeSceneryFile(@NonNull final String fileName, @NonNull final String data) {
+	public Completable writeSceneryFile(@NonNull final String fileName, @NonNull final String data) {
 		File dir = getSceneryOutputDir(context);
 		File file = new File(dir, fileName);
 		return writeFile(file, data);

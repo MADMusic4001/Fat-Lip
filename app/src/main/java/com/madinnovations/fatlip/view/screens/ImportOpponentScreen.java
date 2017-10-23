@@ -131,7 +131,18 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 	public void onFileSelected(String fileName) {
 		if(fileName != null) {
 			loadImage(fileName);
-			nameEditText.setText(fileName);
+			String name = fileName;
+			if(opponent != null && (opponent.getName() == null || opponent.getName().length() == 0)) {
+				String separator = System.getProperty("file.separator");
+				if (fileName.lastIndexOf(separator) != -1) {
+					name = fileName.substring(fileName.lastIndexOf(separator) + 1);
+				}
+				if(name.lastIndexOf(".") != -1) {
+					name = name.substring(0, name.lastIndexOf("."));
+				}
+				opponent.setName(name);
+			}
+			nameEditText.setText(name);
 		}
 	}
 
@@ -241,7 +252,7 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 							opponent.setImageFileName(fileName);
 						}
 						else {
-							opponent.setImageFileName(fileName.substring(fileName.lastIndexOf(separator)));
+							opponent.setImageFileName(fileName.substring(fileName.lastIndexOf(separator) + 1));
 						}
 						faceView.setContent(bitmap, opponent);
 						saveButton.setEnabled(true);

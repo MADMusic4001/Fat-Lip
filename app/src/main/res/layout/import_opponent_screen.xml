@@ -21,41 +21,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-  <TextView
-      android:id="@+id/select_file_textview"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/name_layout"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintLeft_toLeftOf="parent"
-      app:layout_constraintRight_toLeftOf="@+id/name_edit"
-      app:layout_constraintBottom_toTopOf="@+id/select_file_button"
-      app:layout_constraintVertical_chainStyle="spread"
-      android:text="@string/select_file"/>
-  <EditText
-      android:id="@id/name_edit"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintBottom_toTopOf="@+id/select_file_label"
+      app:layout_constraintVertical_chainStyle="packed"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:minWidth="200dp"
-      android:inputType="text"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintLeft_toRightOf="@id/select_file_textview"
-      app:layout_constraintRight_toRightOf="parent"/>
+      android:layout_margin="10dp">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/name_edit"
+        android:minWidth="200dp"
+        android:inputType="text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/name"/>
+  </android.support.design.widget.TextInputLayout>
 
+  <TextView
+      android:id="@id/select_file_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/name_layout"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/select_file_button"
+      app:layout_constraintBottom_toTopOf="@+id/face_view"
+      app:layout_constraintHorizontal_chainStyle="packed"
+      android:text="@string/select_file"/>
   <Button
       android:id="@id/select_file_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/select_file_textview"
-      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/name_layout"
+      app:layout_constraintLeft_toRightOf="@id/select_file_label"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintBottom_toTopOf="@+id/face_view"
+      app:layout_constraintBottom_toTopOf="@id/face_view"
       android:text="@string/ellipsis"/>
 
   <com.madinnovations.fatlip.view.views.FaceView
       android:id="@id/face_view"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/select_file_button"
+      android:layout_height="512dp"
+      app:layout_constraintTop_toBottomOf="@id/select_file_label"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintBottom_toTopOf="@+id/back_button"/>
@@ -68,14 +77,15 @@
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toLeftOf="@+id/save_button"
       app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintVertical_chainStyle="spread"
       android:text="@string/back"/>
   <Button
       android:id="@id/save_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/face_view"
+      app:layout_constraintTop_toTopOf="@id/back_button"
       app:layout_constraintLeft_toRightOf="@id/back_button"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintBottom_toBottomOf="@id/back_button"
       android:text="@string/save"/>
 </android.support.constraint.ConstraintLayout>

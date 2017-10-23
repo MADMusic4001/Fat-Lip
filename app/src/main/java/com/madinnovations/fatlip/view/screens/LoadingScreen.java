@@ -68,6 +68,10 @@ public class LoadingScreen extends Screen {
 
 		textureId = TextureHelper.loadTexture((GLGame)game, R.drawable.fatlip);
 		splashProgram = new SplashShaderProgram((GLGame)game);
+
+		int[] value = new int[1];
+		GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_SIZE, value, 0);
+		TextureHelper.setMaxTextureSize(value[0]);
 	}
 
 	@Override

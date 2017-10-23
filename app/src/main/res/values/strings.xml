@@ -38,6 +38,9 @@
   <string name="import_scenery">Import Scenery</string>
   <string name="import_failure">Import Failure</string>
   <string name="size_error">The image size must be 512x512</string>
+  <string name="scenery_min_size_error">The scenery image size must be at least 64 pixels in both dimensions.</string>
+  <string name="scenery_max_size_error">The scenery image size must be no more than %1$d pixels in both dimensions.</string>
+  <string name="scenery_pow2_size_error">The scenery image size must be a power of 2 pixels in size (e.g. 64, 128, 256, 512, 1024, etc.) in both dimensions.</string>
   <string name="no_face">No face found in the image</string>
   <string name="multiple_faces">The image must have only one face.</string>
   <string name="face_too_small">The face in the image is too small</string>

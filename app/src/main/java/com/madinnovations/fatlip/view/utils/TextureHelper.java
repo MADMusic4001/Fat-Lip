@@ -28,6 +28,7 @@ import static android.opengl.GLUtils.texImage2D;
 
 public class TextureHelper {
     private static final String TAG = "TextureHelper";
+    private static int maxTextureSize = 0;
 
     /**
      * Loads a texture from a resource ID, returning the OpenGL ID for that
@@ -134,5 +135,13 @@ public class TextureHelper {
         glBindTexture(GL_TEXTURE_2D, 0);
 
         return textureObjectIds[0];
+    }
+
+    // Getters and setters
+    public static int getMaxTextureSize() {
+        return maxTextureSize;
+    }
+    public static void setMaxTextureSize(int maxTextureSize) {
+        TextureHelper.maxTextureSize = maxTextureSize;
     }
 }

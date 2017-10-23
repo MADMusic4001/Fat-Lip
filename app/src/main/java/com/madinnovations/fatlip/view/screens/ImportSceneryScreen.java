@@ -47,6 +47,7 @@ import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.di.components.ScreenComponent;
 import com.madinnovations.fatlip.view.di.modules.ScreenModule;
 import com.madinnovations.fatlip.view.framework.Screen;
+import com.madinnovations.fatlip.view.utils.TextureHelper;
 
 import javax.inject.Inject;
 
@@ -157,15 +158,36 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 		}
 		else {
 			Bitmap bitmap = BitmapFactory.decodeFile(fileName);
-			if(bitmap.getWidth() != 512 || bitmap.getHeight() != 512) {
+			if(bitmap.getWidth() < 64 || bitmap.getHeight() < 64) {
 				AlertDialog alertDialog = new AlertDialog.Builder((FatLipGame)game)
 						.setTitle(R.string.import_failure)
-						.setMessage(R.string.size_error)
+						.setMessage(R.string.scenery_min_size_error)
 						.setPositiveButton(R.string.ok, (dialog, which) -> {})
 						.create();
 				alertDialog.show();
 				return;
 			}
+
+			if(bitmap.getWidth() > TextureHelper.getMaxTextureSize() || bitmap.getHeight() > TextureHelper.getMaxTextureSize()) {
+				AlertDialog alertDialog = new AlertDialog.Builder((FatLipGame)game)
+						.setTitle(R.string.import_failure)
+						.setMessage(((GLGame)game).getString(R.string.scenery_max_size_error, TextureHelper.getMaxTextureSize()))
+						.setPositiveButton(R.string.ok, (dialog, which) -> {})
+						.create();
+				alertDialog.show();
+				return;
+			}
+
+			if((bitmap.getWidth() & (bitmap.getWidth() - 1)) != 0 || (bitmap.getHeight() & (bitmap.getHeight() - 1)) != 0) {
+				AlertDialog alertDialog = new AlertDialog.Builder((FatLipGame)game)
+						.setTitle(R.string.import_failure)
+						.setMessage(R.string.scenery_pow2_size_error)
+						.setPositiveButton(R.string.ok, (dialog, which) -> {})
+						.create();
+				alertDialog.show();
+				return;
+			}
+
 			scenery = new Scenery();
 			sourcePath = fileName;
 			String separator = System.getProperty("file.separator");

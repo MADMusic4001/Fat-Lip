@@ -43,6 +43,7 @@
   <string name="face_too_small">The face in the image is too small</string>
   <string name="not_two_eyes">Two eyes not found in the image</string>
   <string name="no_mouth">No mouth found in the image</string>
+  <string name="face_detector_not_available">Face detector dependencies are not yet available.</string>
   <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
   <string name="save_success">Your opponent was successfully saved.</string>
   <string name="save_error">An error occurred when attempting to save your opponent.</string>

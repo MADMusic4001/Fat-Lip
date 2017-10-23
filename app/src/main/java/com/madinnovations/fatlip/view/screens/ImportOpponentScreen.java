@@ -170,6 +170,7 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 			SparseArray<Face> faces = faceDetector.detect(frame);
 
 			if(!faceDetector.isOperational()) {
+				Toast.makeText((GLGame)game, R.string.face_detector_not_available, Toast.LENGTH_LONG).show();
 				Log.w(TAG, "Face detector dependencies are not yet available.");
 
 				IntentFilter lowstorageFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
@@ -179,6 +180,7 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 					Toast.makeText((GLGame)game, R.string.low_storage_error, Toast.LENGTH_LONG).show();
 					Log.w(TAG, ((GLGame)game).getString(R.string.low_storage_error));
 				}
+				return;
 			}
 
 			if(faces.size() == 0) {

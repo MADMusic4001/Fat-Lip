@@ -23,11 +23,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.madinnovations.fatlip.Constants;
 import com.madinnovations.fatlip.R;
@@ -69,8 +69,11 @@ public class SetupScreen extends Screen {
 	@Inject
 	protected WeaponRxHandler   weaponRxHandler;
 	private   ConstraintLayout  setupScreenLayout;
+	private   TextView          opponentTextView;
 	private   LinearLayout      opponentsLayout;
+	private   TextView          weaponTextView;
 	private   LinearLayout      weaponsLayout;
+	private   TextView          sceneryTextView;
 	private   LinearLayout      sceneryLayout;
 	private   Button            backButton;
 	private   Button            startButton;
@@ -95,10 +98,13 @@ public class SetupScreen extends Screen {
 																							null);
 			parentLayout.addView(setupScreenLayout);
 			opponentsLayout = ((GLGame)game).findViewById(R.id.opponents_layout);
+			opponentTextView = ((GLGame)game).findViewById(R.id.opponents_textview);
 			initOpponentsLayout();
 			weaponsLayout = ((GLGame)game).findViewById(R.id.weapons_layout);
+			weaponTextView = ((GLGame)game).findViewById(R.id.weapons_textview);
 			initWeaponsLayout();
 			sceneryLayout = ((GLGame)game).findViewById(R.id.scenery_layout);
+			sceneryTextView = ((GLGame)game).findViewById(R.id.scenery_textview);
 			initSceneryLayout();
 			backButton = ((GLGame)game).findViewById(R.id.back_button);
 			initBackButton();
@@ -136,11 +142,12 @@ public class SetupScreen extends Screen {
 	}
 
 	private void initOpponentsLayout() {
+		opponentTextView.setText(((GLGame)game).getString(R.string.select_opponent,
+														  ((GLGame)game).getString(R.string.random)));
 		opponentRxHandler.loadOpponents()
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
-					boolean first = true;
 					for(Opponent opponent : result) {
 						InputStream is;
 						try {
@@ -159,12 +166,8 @@ public class SetupScreen extends Screen {
 						final ImageView imageView = new ImageView((GLGame) game);
 						imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 128, true));
 						imageView.setPadding(5, 5, 5, 5);
-						if(first) {
-							imageView.setSelected(true);
-							imageView.setBackgroundColor(Color.RED);
-							first = false;
-						}
 						imageView.setOnClickListener(v -> {
+							boolean selection = false;
 							for(int i = 0; i < opponentsLayout.getChildCount(); i++) {
 								View childView = opponentsLayout.getChildAt(i);
 								if(childView != imageView) {
@@ -179,8 +182,16 @@ public class SetupScreen extends Screen {
 									else {
 										imageView.setBackgroundColor(Color.RED);
 										imageView.setSelected(true);
+										selection = true;
+										opponentTextView.setText(((GLGame)game).getString(
+												R.string.select_opponent, opponent.getName()));
 									}
 								}
+							}
+							if(!selection) {
+								opponentTextView.setText(((GLGame)game).getString(
+										R.string.select_opponent,
+										((GLGame)game).getString(R.string.random)));
 							}
 						});
 						opponentsLayout.addView(imageView);
@@ -189,12 +200,12 @@ public class SetupScreen extends Screen {
 	}
 
 	private void initWeaponsLayout() {
+		weaponTextView.setText(((GLGame)game).getString(R.string.select_weapon,
+														  ((GLGame)game).getString(R.string.random)));
 		weaponRxHandler.loadWeapons()
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
-					boolean first = true;
-					Log.d(TAG, "initWeaponsLayout: weapons count = " + result.size());
 					for(Weapon weapon : result) {
 						InputStream is;
 						try {
@@ -207,12 +218,8 @@ public class SetupScreen extends Screen {
 						final ImageView imageView = new ImageView((GLGame) game);
 						imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 128, true));
 						imageView.setPadding(5, 5, 5, 5);
-						if(first) {
-							imageView.setSelected(true);
-							imageView.setBackgroundColor(Color.RED);
-							first = false;
-						}
 						imageView.setOnClickListener(v -> {
+							boolean selection = false;
 							for(int i = 0; i < weaponsLayout.getChildCount(); i++) {
 								View childView = weaponsLayout.getChildAt(i);
 								if(childView != imageView) {
@@ -227,8 +234,16 @@ public class SetupScreen extends Screen {
 									else {
 										imageView.setBackgroundColor(Color.RED);
 										imageView.setSelected(true);
+										selection = true;
+										weaponTextView.setText(((GLGame)game).getString(
+												R.string.select_weapon, weapon.getName()));
 									}
 								}
+							}
+							if(!selection) {
+								weaponTextView.setText(((GLGame)game).getString(
+										R.string.select_weapon,
+										((GLGame)game).getString(R.string.random)));
 							}
 						});
 						weaponsLayout.addView(imageView);
@@ -237,11 +252,12 @@ public class SetupScreen extends Screen {
 	}
 
 	private void initSceneryLayout() {
+		sceneryTextView.setText(((GLGame)game).getString(R.string.select_scenery,
+														  ((GLGame)game).getString(R.string.random)));
 		sceneryRxHandler.loadScenery()
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
-					boolean first = true;
 					for(Scenery scenery : result) {
 						InputStream is;
 						try {
@@ -260,12 +276,8 @@ public class SetupScreen extends Screen {
 						final ImageView imageView = new ImageView((GLGame) game);
 						imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 128, true));
 						imageView.setPadding(5, 5, 5, 5);
-						if(first) {
-							imageView.setSelected(true);
-							imageView.setBackgroundColor(Color.RED);
-							first = false;
-						}
 						imageView.setOnClickListener(v -> {
+							boolean selection = false;
 							for(int i = 0; i < sceneryLayout.getChildCount(); i++) {
 								View childView = sceneryLayout.getChildAt(i);
 								if(childView != imageView) {
@@ -280,8 +292,17 @@ public class SetupScreen extends Screen {
 									else {
 										imageView.setBackgroundColor(Color.RED);
 										imageView.setSelected(true);
+										sceneryTextView.setText(
+												((GLGame)game).getString(R.string.select_scenery, scenery.getName()));
+										selection = true;
 									}
 								}
+							}
+							if(!selection) {
+								sceneryTextView.setText(
+										((GLGame)game).getString(
+												R.string.select_scenery,
+												((GLGame)game).getString(R.string.random)));
 							}
 						});
 						sceneryLayout.addView(imageView);

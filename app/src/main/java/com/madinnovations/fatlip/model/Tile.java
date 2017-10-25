@@ -20,14 +20,12 @@ package com.madinnovations.fatlip.model;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
-import android.util.Log;
 
-import com.madinnovations.fatlip.model.framework.VertexArray;
+import com.madinnovations.fatlip.view.framework.VertexArray;
 import com.madinnovations.fatlip.view.programs.TileShaderProgram;
 import com.madinnovations.fatlip.view.utils.TextureHelper;
 
 import static android.opengl.GLES20.GL_LINE_LOOP;
-import static android.opengl.GLES20.GL_NO_ERROR;
 import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;

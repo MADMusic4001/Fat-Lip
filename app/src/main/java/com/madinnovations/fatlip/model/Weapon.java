@@ -15,21 +15,30 @@
  *   limitations under the License.
  *
  */
-package com.madinnovations.fatlip.model.framework.impl;
 
-import com.madinnovations.fatlip.view.framework.TextureAtlas;
-
-import java.util.Collection;
+package com.madinnovations.fatlip.model;
 
 /**
- * TextureAtlas implementation that reads the sprite layout information from a JSON file.
+ * Representation of a throwing weapon in the Fat Lip game.
  */
-public class TextureAtlasJsonImpl implements TextureAtlas {
-	private Collection<Frame> frames;
-	private Meta meta;
+public class Weapon {
+	private String name;
+	private String imageFileName;
 
-	@Override
-	public void load(String fileName) {
+	// Getters and Setters
+	public String getName() {
+		return name;
+	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getImageFileName() {
+		return imageFileName;
+	}
+
+	public void setImageFileName(String imageFileName) {
+		this.imageFileName = imageFileName;
 	}
 }

@@ -16,7 +16,7 @@
  *
  */
 
-package com.madinnovations.fatlip.model.framework;
+package com.madinnovations.fatlip.view.framework;
 
 import android.graphics.PointF;
 import android.graphics.RectF;

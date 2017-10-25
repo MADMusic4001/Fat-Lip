@@ -18,7 +18,7 @@
 
 package com.madinnovations.fatlip.model;
 
-import com.madinnovations.fatlip.model.framework.VertexArray;
+import com.madinnovations.fatlip.view.framework.VertexArray;
 import com.madinnovations.fatlip.view.programs.SplashShaderProgram;
 
 import static android.opengl.GLES20.GL_TRIANGLES;

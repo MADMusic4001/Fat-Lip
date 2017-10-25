@@ -83,4 +83,21 @@ public class Constants {
 		}
 		return dir;
 	}
+
+	/**
+	 * Gets the output directory to use for custom weapons. {InternalFiles}/weapons.
+	 *
+	 * @return the File representing the directory or n
+	 */
+	public static File getWeaponsOutputDir(Context context) {
+		File dir;
+		dir = new File(context.getFilesDir(), "weapons");
+		if(!dir.exists()) {
+			if(!dir.mkdir()) {
+				Log.e(TAG, "Weapons directory not created");
+				throw new RuntimeException("Error creating weapons output directory");
+			}
+		}
+		return dir;
+	}
 }

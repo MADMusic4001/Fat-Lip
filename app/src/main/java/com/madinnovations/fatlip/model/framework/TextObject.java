@@ -18,6 +18,7 @@
 
 package com.madinnovations.fatlip.model.framework;
 
+import com.madinnovations.fatlip.view.framework.VertexArray;
 import com.madinnovations.fatlip.view.programs.SplashShaderProgram;
 
 import static android.opengl.GLES20.GL_TRIANGLES;
@@ -33,11 +34,11 @@ public class TextObject {
 	private static final int TEXTURE_COORDINATES_COMPONENT_COUNT = 2;
 	private static final int STRIDE = (POSITION_COMPONENT_COUNT
 			+ TEXTURE_COORDINATES_COMPONENT_COUNT) * BYTES_PER_FLOAT;
-	private String text;
-	private float x;
-	private float y;
-	private float[] color;
-	private float[] vertexData;
+	private String      text;
+	private float       x;
+	private float       y;
+	private float[]     color;
+	private float[]     vertexData;
 	private VertexArray vertexArray;
 
 	/**

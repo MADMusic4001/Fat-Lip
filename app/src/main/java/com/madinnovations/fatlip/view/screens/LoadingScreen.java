@@ -27,7 +27,7 @@ import com.madinnovations.fatlip.controller.framework.Input;
 import com.madinnovations.fatlip.controller.framework.Settings;
 import com.madinnovations.fatlip.model.Assets;
 import com.madinnovations.fatlip.model.Splash;
-import com.madinnovations.fatlip.model.framework.FramesPerSecondLogger;
+import com.madinnovations.fatlip.view.framework.FramesPerSecondLogger;
 import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.framework.Screen;
 import com.madinnovations.fatlip.view.programs.SplashShaderProgram;

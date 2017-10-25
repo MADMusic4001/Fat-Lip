@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -34,9 +35,11 @@ import com.madinnovations.fatlip.controller.framework.Game;
 import com.madinnovations.fatlip.controller.framework.Settings;
 import com.madinnovations.fatlip.controller.rxhandlers.OpponentRxHandler;
 import com.madinnovations.fatlip.controller.rxhandlers.SceneryRxHandler;
+import com.madinnovations.fatlip.controller.rxhandlers.WeaponRxHandler;
 import com.madinnovations.fatlip.model.Assets;
 import com.madinnovations.fatlip.model.Opponent;
 import com.madinnovations.fatlip.model.Scenery;
+import com.madinnovations.fatlip.model.Weapon;
 import com.madinnovations.fatlip.view.FatLipApp;
 import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.di.components.ScreenComponent;
@@ -63,6 +66,8 @@ public class SetupScreen extends Screen {
 	protected OpponentRxHandler opponentRxHandler;
 	@Inject
 	protected SceneryRxHandler  sceneryRxHandler;
+	@Inject
+	protected WeaponRxHandler   weaponRxHandler;
 	private   ConstraintLayout  setupScreenLayout;
 	private   LinearLayout      opponentsLayout;
 	private   LinearLayout      weaponsLayout;
@@ -184,6 +189,51 @@ public class SetupScreen extends Screen {
 	}
 
 	private void initWeaponsLayout() {
+		weaponRxHandler.loadWeapons()
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(result -> {
+					boolean first = true;
+					Log.d(TAG, "initWeaponsLayout: weapons count = " + result.size());
+					for(Weapon weapon : result) {
+						InputStream is;
+						try {
+							is = game.getFileIO().readAsset("weapons/" + weapon.getImageFileName());
+						}
+						catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+						Bitmap bitmap = BitmapFactory.decodeStream(is);
+						final ImageView imageView = new ImageView((GLGame) game);
+						imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 128, true));
+						imageView.setPadding(5, 5, 5, 5);
+						if(first) {
+							imageView.setSelected(true);
+							imageView.setBackgroundColor(Color.RED);
+							first = false;
+						}
+						imageView.setOnClickListener(v -> {
+							for(int i = 0; i < weaponsLayout.getChildCount(); i++) {
+								View childView = weaponsLayout.getChildAt(i);
+								if(childView != imageView) {
+									childView.setSelected(false);
+									childView.setBackgroundColor(Color.TRANSPARENT);
+								}
+								else {
+									if (imageView.isSelected()) {
+										imageView.setBackgroundColor(Color.TRANSPARENT);
+										imageView.setSelected(false);
+									}
+									else {
+										imageView.setBackgroundColor(Color.RED);
+										imageView.setSelected(true);
+									}
+								}
+							}
+						});
+						weaponsLayout.addView(imageView);
+					}
+				});
 	}
 
 	private void initSceneryLayout() {

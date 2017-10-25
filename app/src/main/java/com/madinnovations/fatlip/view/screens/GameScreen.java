@@ -18,7 +18,10 @@
 
 package com.madinnovations.fatlip.view.screens;
 
+import android.view.View;
+
 import com.madinnovations.fatlip.controller.framework.Game;
+import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.framework.Screen;
 
 /**
@@ -64,5 +67,15 @@ public class GameScreen extends Screen {
 	@Override
 	public void dispose() {
 
+	}
+
+	@Override
+	public void showScreen() {
+		((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void hideScreen() {
+		((GLGame)game).getGlView().setVisibility(View.GONE);
 	}
 }

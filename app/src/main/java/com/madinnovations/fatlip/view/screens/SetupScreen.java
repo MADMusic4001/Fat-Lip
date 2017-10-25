@@ -23,32 +23,30 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 
+import com.madinnovations.fatlip.Constants;
 import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.Game;
 import com.madinnovations.fatlip.controller.framework.Settings;
 import com.madinnovations.fatlip.controller.rxhandlers.OpponentRxHandler;
+import com.madinnovations.fatlip.controller.rxhandlers.SceneryRxHandler;
 import com.madinnovations.fatlip.model.Assets;
 import com.madinnovations.fatlip.model.Opponent;
+import com.madinnovations.fatlip.model.Scenery;
 import com.madinnovations.fatlip.view.FatLipApp;
 import com.madinnovations.fatlip.view.activities.GLGame;
 import com.madinnovations.fatlip.view.di.components.ScreenComponent;
 import com.madinnovations.fatlip.view.di.modules.ScreenModule;
 import com.madinnovations.fatlip.view.framework.Screen;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -63,19 +61,22 @@ public class SetupScreen extends Screen {
 	private static final String TAG = "SetupScreen";
 	@Inject
 	protected OpponentRxHandler opponentRxHandler;
-	private ConstraintLayout setupScreenLayout;
-	private LinearLayout opponentsLayout;
-	private Spinner throwingObjectSpinner;
-	private Spinner scenerySpinner;
-	private Button backButton;
-	private Button startButton;
-	private ImageView selectedOpponent;
+	@Inject
+	protected SceneryRxHandler  sceneryRxHandler;
+	private   ConstraintLayout  setupScreenLayout;
+	private   LinearLayout      opponentsLayout;
+	private   LinearLayout      weaponsLayout;
+	private   LinearLayout      sceneryLayout;
+	private   Button            backButton;
+	private   Button            startButton;
+	private   ImageView         selectedOpponent;
 
 	/**
 	 * Creates a new SetupScreen instance
 	 *
 	 * @param game  the {@link Game} instance
 	 */
+	@SuppressLint("InflateParams")
 	@Inject
 	public SetupScreen(final Game game) {
 		super(game);
@@ -83,24 +84,22 @@ public class SetupScreen extends Screen {
 				.newScreenComponent(new ScreenModule(this));
 		screenComponent.injectInto(this);
 
-		((GLGame)game).runOnUiThread(new Runnable() {
-			@SuppressLint("InflateParams")
-			@Override
-			public void run() {
-				LinearLayout parentLayout = ((GLGame)game).getParentLayout();
-				setupScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.setup_screen,
-																								null);
-				parentLayout.addView(setupScreenLayout);
-				opponentsLayout = ((GLGame)game).findViewById(R.id.opponents_layout);
-				initOpponentsLayout();
-				throwingObjectSpinner = ((GLGame)game).findViewById(R.id.throwing_objects_spinner);
-				scenerySpinner = ((GLGame)game).findViewById(R.id.scenery_spinner);
-				backButton = ((GLGame)game).findViewById(R.id.back_button);
-				initBackButton();
-				startButton = ((GLGame)game).findViewById(R.id.start_button);
-				initStartButton();
-				((GLGame)game).getGlView().setVisibility(View.GONE);
-			}
+		((GLGame)game).runOnUiThread(() -> {
+			LinearLayout parentLayout = ((GLGame)game).getParentLayout();
+			setupScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.setup_screen,
+																							null);
+			parentLayout.addView(setupScreenLayout);
+			opponentsLayout = ((GLGame)game).findViewById(R.id.opponents_layout);
+			initOpponentsLayout();
+			weaponsLayout = ((GLGame)game).findViewById(R.id.weapons_layout);
+			initWeaponsLayout();
+			sceneryLayout = ((GLGame)game).findViewById(R.id.scenery_layout);
+			initSceneryLayout();
+			backButton = ((GLGame)game).findViewById(R.id.back_button);
+			initBackButton();
+			startButton = ((GLGame)game).findViewById(R.id.start_button);
+			initStartButton();
+			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 
@@ -136,12 +135,17 @@ public class SetupScreen extends Screen {
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
+					boolean first = true;
 					for(Opponent opponent : result) {
-						Log.d(TAG, "onNext: opponent" + opponent);
 						InputStream is;
 						try {
-							is = ((GLGame) game).getFileIO().readAsset("opponents/" + opponent.getImageFileName());
-							Log.d(TAG, "onNext: ");
+							if(opponent.isCustom()) {
+								is = new FileInputStream(new File(Constants.getOpponentsOutputDir((GLGame)game),
+																  opponent.getImageFileName()));
+							}
+							else {
+								is = game.getFileIO().readAsset("opponents/" + opponent.getImageFileName());
+							}
 						}
 						catch (IOException e) {
 							throw new RuntimeException(e);
@@ -150,17 +154,27 @@ public class SetupScreen extends Screen {
 						final ImageView imageView = new ImageView((GLGame) game);
 						imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 128, true));
 						imageView.setPadding(5, 5, 5, 5);
-						imageView.setSelected(true);
-						imageView.setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								if (imageView.isSelected()) {
-									imageView.setBackgroundColor(Color.WHITE);
-									imageView.setSelected(false);
+						if(first) {
+							imageView.setSelected(true);
+							imageView.setBackgroundColor(Color.RED);
+							first = false;
+						}
+						imageView.setOnClickListener(v -> {
+							for(int i = 0; i < opponentsLayout.getChildCount(); i++) {
+								View childView = opponentsLayout.getChildAt(i);
+								if(childView != imageView) {
+									childView.setSelected(false);
+									childView.setBackgroundColor(Color.TRANSPARENT);
 								}
 								else {
-									imageView.setBackgroundColor(Color.RED);
-									imageView.setSelected(true);
+									if (imageView.isSelected()) {
+										imageView.setBackgroundColor(Color.TRANSPARENT);
+										imageView.setSelected(false);
+									}
+									else {
+										imageView.setBackgroundColor(Color.RED);
+										imageView.setSelected(true);
+									}
 								}
 							}
 						});
@@ -169,41 +183,91 @@ public class SetupScreen extends Screen {
 		});
 	}
 
-	private void initBackButton() {
-		backButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				((GLGame)game).runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((GLGame)game).getParentLayout().removeView(setupScreenLayout);
-						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
-						game.setScreen(new HomeScreen(game), true);
-						if(Settings.soundEnabled) {
-							Assets.click.play(1);
+	private void initWeaponsLayout() {
+	}
+
+	private void initSceneryLayout() {
+		sceneryRxHandler.loadScenery()
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(result -> {
+					boolean first = true;
+					for(Scenery scenery : result) {
+						InputStream is;
+						try {
+							if(scenery.isCustom()) {
+								is = new FileInputStream(new File(Constants.getSceneryOutputDir((GLGame)game),
+																  scenery.getImageFileName()));
+							}
+							else {
+								is = game.getFileIO().readAsset("scenery/" + scenery.getImageFileName());
+							}
 						}
+						catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+						Bitmap bitmap = BitmapFactory.decodeStream(is);
+						final ImageView imageView = new ImageView((GLGame) game);
+						imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 128, 128, true));
+						imageView.setPadding(5, 5, 5, 5);
+						if(first) {
+							imageView.setSelected(true);
+							imageView.setBackgroundColor(Color.RED);
+							first = false;
+						}
+						imageView.setOnClickListener(v -> {
+							for(int i = 0; i < sceneryLayout.getChildCount(); i++) {
+								View childView = sceneryLayout.getChildAt(i);
+								if(childView != imageView) {
+									childView.setSelected(false);
+									childView.setBackgroundColor(Color.TRANSPARENT);
+								}
+								else {
+									if (imageView.isSelected()) {
+										imageView.setBackgroundColor(Color.TRANSPARENT);
+										imageView.setSelected(false);
+									}
+									else {
+										imageView.setBackgroundColor(Color.RED);
+										imageView.setSelected(true);
+									}
+								}
+							}
+						});
+						sceneryLayout.addView(imageView);
 					}
 				});
+	}
+
+	private void initBackButton() {
+		backButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(setupScreenLayout);
+			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+			game.setScreen(new HomeScreen(game), true);
+			if(Settings.soundEnabled) {
+				Assets.click.play(1);
 			}
-		});
+		}));
 	}
 
 	private void initStartButton() {
-		startButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				((GLGame)game).runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((GLGame)game).getParentLayout().removeView(setupScreenLayout);
-						((GLGame)game).getGlView().setVisibility(View.VISIBLE);
-						game.setScreen(new GameScreen(game), true);
-						if(Settings.soundEnabled) {
-							Assets.click.play(1);
-						}
-					}
-				});
+		startButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(setupScreenLayout);
+			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+			game.setScreen(new GameScreen(game), true);
+			if(Settings.soundEnabled) {
+				Assets.click.play(1);
 			}
-		});
+		}));
+	}
+
+	@Override
+	public void showScreen() {
+		((GLGame)game).getParentLayout().addView(setupScreenLayout);
+	}
+
+	@Override
+	public void hideScreen() {
+		((GLGame)game).getParentLayout().removeView(setupScreenLayout);
 	}
 }

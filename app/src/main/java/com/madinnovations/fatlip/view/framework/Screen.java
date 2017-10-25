@@ -73,4 +73,14 @@ public abstract class Screen {
 	 * Notifies the screen that it will no longer be rendered and should release any resources it may have created.
 	 */
 	public abstract void dispose();
+
+	/**
+	 * Allows the screen to set up values needed to show the screen.
+	 */
+	public abstract void showScreen();
+
+	/**
+	 * Allows the screen to set values to hide the screen
+	 */
+	public abstract void hideScreen();
 }

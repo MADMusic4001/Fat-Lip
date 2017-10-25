@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 /**
  * Json serializer and deserializer for the {@link Opponent} entities
  */
+@SuppressWarnings("WeakerAccess")
 @Singleton
 public class OpponentSerializer extends TypeAdapter<Opponent> {
 	private static final String NAME = "name";
@@ -41,6 +42,7 @@ public class OpponentSerializer extends TypeAdapter<Opponent> {
 	private static final String NOSE = "nose";
 	private static final String MOUTH = "mouth";
 	private static final String FILE_NAME = "fileName";
+	private static final String CUSTOM = "custom";
 
 	/**
 	 * Creates a new OpponentSerializer instance
@@ -62,6 +64,7 @@ public class OpponentSerializer extends TypeAdapter<Opponent> {
 		out.name(MOUTH);
 		writeRect(out, value.getMouth());
 		out.name(FILE_NAME).value(value.getImageFileName());
+		out.name(CUSTOM).value(value.isCustom());
 		out.endObject();
 	}
 
@@ -94,6 +97,9 @@ public class OpponentSerializer extends TypeAdapter<Opponent> {
 					break;
 				case FILE_NAME:
 					opponent.setImageFileName(in.nextString());
+					break;
+				case CUSTOM:
+					opponent.setCustom(in.nextBoolean());
 					break;
 			}
 		}

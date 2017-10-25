@@ -30,6 +30,7 @@ public class Opponent {
 	private Rect   nose;
 	private Rect   mouth;
 	private String imageFileName;
+	private boolean custom = false;
 
 	// Getters and setters
 	public String getName() {
@@ -67,5 +68,11 @@ public class Opponent {
 	}
 	public void setImageFileName(String imageFileName) {
 		this.imageFileName = imageFileName;
+	}
+	public boolean isCustom() {
+		return custom;
+	}
+	public void setCustom(boolean custom) {
+		this.custom = custom;
 	}
 }

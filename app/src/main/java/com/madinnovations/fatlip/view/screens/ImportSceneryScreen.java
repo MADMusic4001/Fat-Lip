@@ -147,8 +147,8 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 					name = name.substring(0, name.lastIndexOf("."));
 				}
 				scenery.setName(name);
+				nameEditText.setText(name);
 			}
-			nameEditText.setText(name);
 		}
 	}
 
@@ -189,6 +189,7 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 			}
 
 			scenery = new Scenery();
+			scenery.setCustom(true);
 			sourcePath = fileName;
 			String separator = System.getProperty("file.separator");
 			if (fileName.lastIndexOf(separator) == -1) {
@@ -210,7 +211,7 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 			@Override
 			public void afterTextChanged(Editable editable) {
-				if(scenery != null && editable.length() > 0 && scenery != null) {
+				if(scenery != null && editable.length() > 0) {
 					scenery.setName(editable.toString());
 				}
 			}
@@ -235,10 +236,10 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 		saveButton.setOnClickListener(v -> sceneryRxHandler.saveScenery(scenery, sourcePath)
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(() -> Toast.makeText((GLGame)game, R.string.save_success, Toast.LENGTH_LONG).show(),
+				.subscribe(() -> Toast.makeText((GLGame)game, R.string.save_scenery_success, Toast.LENGTH_LONG).show(),
 						   throwable -> {
-					Toast.makeText((GLGame)game, R.string.save_error, Toast.LENGTH_LONG).show();
-					Log.e(TAG, "An exception occurred saving the opponent", throwable);
+					Toast.makeText((GLGame)game, R.string.save_scenery_error, Toast.LENGTH_LONG).show();
+					Log.e(TAG, "An exception occurred saving the scenery", throwable);
 				}));
 	}
 
@@ -253,5 +254,15 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 					}
 				})
 		);
+	}
+
+	@Override
+	public void showScreen() {
+		((GLGame)game).getParentLayout().addView(importSceneryScreenLayout);
+	}
+
+	@Override
+	public void hideScreen() {
+		((GLGame)game).getParentLayout().removeView(importSceneryScreenLayout);
 	}
 }

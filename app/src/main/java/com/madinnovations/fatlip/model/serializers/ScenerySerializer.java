@@ -18,8 +18,6 @@
 
 package com.madinnovations.fatlip.model.serializers;
 
-import android.graphics.Rect;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -33,10 +31,12 @@ import javax.inject.Singleton;
 /**
  * Json serializer and deserializer for the {@link Scenery} entities
  */
+@SuppressWarnings("WeakerAccess")
 @Singleton
 public class ScenerySerializer extends TypeAdapter<Scenery> {
 	private static final String NAME = "name";
 	private static final String FILE_NAME = "fileName";
+	private static final String CUSTOM = "custom";
 
 	/**
 	 * Creates a new ScenerySerializer instance
@@ -50,13 +50,13 @@ public class ScenerySerializer extends TypeAdapter<Scenery> {
 		out.beginObject();
 		out.name(NAME).value(value.getName());
 		out.name(FILE_NAME).value(value.getImageFileName());
+		out.name(CUSTOM).value(value.isCustom());
 		out.endObject();
 	}
 
 	@Override
 	public Scenery read(JsonReader in) throws IOException {
 		Scenery scenery = new Scenery();
-		Rect aRect;
 
 		in.beginObject();
 		while(in.hasNext()) {
@@ -66,6 +66,9 @@ public class ScenerySerializer extends TypeAdapter<Scenery> {
 					break;
 				case FILE_NAME:
 					scenery.setImageFileName(in.nextString());
+					break;
+				case CUSTOM:
+					scenery.setCustom(in.nextBoolean());
 					break;
 			}
 		}

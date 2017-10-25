@@ -161,4 +161,14 @@ public class HomeScreen extends Screen {
 		highScoresArrayAdapter.add(score);
 		highScoresListview.setAdapter(highScoresArrayAdapter);
 	}
+
+	@Override
+	public void showScreen() {
+		((GLGame)game).getParentLayout().addView(homeScreenLayout);
+	}
+
+	@Override
+	public void hideScreen() {
+		((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+	}
 }

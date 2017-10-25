@@ -38,8 +38,9 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       app:layout_constraintTop_toBottomOf="@id/opponents_textview"
-      app:layout_constraintLeft_toLeftOf="@id/opponents_textview"
-      app:layout_constraintBottom_toTopOf="@+id/throwing_objects_textview">
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintBottom_toTopOf="@+id/weapons_textview">
     <LinearLayout
         android:id="@+id/opponents_layout"
         android:orientation="horizontal"
@@ -49,42 +50,56 @@
   </HorizontalScrollView>
 
   <TextView
-      android:id="@id/throwing_objects_textview"
+      android:id="@id/weapons_textview"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       app:layout_constraintTop_toBottomOf="@id/opponents_spinner"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintBottom_toTopOf="@+id/throwing_objects_spinner"
+      app:layout_constraintBottom_toTopOf="@+id/weapons_spinner"
       android:text="@string/select_weapon"/>
 
-  <Spinner
-      android:id="@id/throwing_objects_spinner"
+  <HorizontalScrollView
+      android:id="@id/weapons_spinner"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/throwing_objects_textview"
+      app:layout_constraintTop_toBottomOf="@id/weapons_textview"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintBottom_toTopOf="@+id/scenery_textview"/>
+      app:layout_constraintBottom_toTopOf="@+id/scenery_textview">
+    <LinearLayout
+        android:id="@+id/weapons_layout"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </LinearLayout>
+  </HorizontalScrollView>
 
   <TextView
       android:id="@id/scenery_textview"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/throwing_objects_spinner"
+      app:layout_constraintTop_toBottomOf="@id/weapons_spinner"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintBottom_toTopOf="@+id/scenery_spinner"
       android:text="@string/select_scenery"/>
 
-  <Spinner
+  <HorizontalScrollView
       android:id="@id/scenery_spinner"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       app:layout_constraintTop_toBottomOf="@id/scenery_textview"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintBottom_toTopOf="@+id/back_button"/>
+      app:layout_constraintBottom_toTopOf="@+id/back_button">
+    <LinearLayout
+        android:id="@+id/scenery_layout"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </LinearLayout>
+  </HorizontalScrollView>
 
   <Button
       android:id="@id/back_button"
@@ -92,17 +107,14 @@
       android:layout_height="wrap_content"
       app:layout_constraintTop_toBottomOf="@id/scenery_spinner"
       app:layout_constraintLeft_toLeftOf="parent"
-      app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintBottom_toTopOf="@+id/start_button"
+      app:layout_constraintRight_toLeftOf="@+id/start_button"
       android:text="@string/back"/>
-
   <Button
       android:id="@id/start_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/back_button"
-      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/scenery_spinner"
+      app:layout_constraintLeft_toRightOf="@id/back_button"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"
       android:text="@string/start"/>
 </android.support.constraint.ConstraintLayout>

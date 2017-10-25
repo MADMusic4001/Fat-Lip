@@ -93,4 +93,14 @@ public class HelpScreen extends Screen {
 			}
 		}));
 	}
+
+	@Override
+	public void showScreen() {
+		((GLGame)game).getParentLayout().addView(helpScreenLayout);
+	}
+
+	@Override
+	public void hideScreen() {
+		((GLGame)game).getParentLayout().removeView(helpScreenLayout);
+	}
 }

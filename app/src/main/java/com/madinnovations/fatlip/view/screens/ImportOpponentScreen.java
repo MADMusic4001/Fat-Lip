@@ -141,8 +141,8 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 					name = name.substring(0, name.lastIndexOf("."));
 				}
 				opponent.setName(name);
+				nameEditText.setText(name);
 			}
-			nameEditText.setText(name);
 		}
 	}
 
@@ -198,6 +198,7 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 				}
 				else {
 					opponent = new Opponent();
+					opponent.setCustom(true);
 					opponent.setMouth(new Rect());
 					for(Landmark landmark : face.getLandmarks()) {
 						switch (landmark.getType()) {
@@ -297,9 +298,9 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 		saveButton.setOnClickListener(v -> opponentRxHandler.saveOpponent(opponent, sourcePath)
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(() -> Toast.makeText((GLGame)game, R.string.save_success, Toast.LENGTH_LONG).show(),
+				.subscribe(() -> Toast.makeText((GLGame)game, R.string.save_opponent_success, Toast.LENGTH_LONG).show(),
 						   throwable -> {
-					Toast.makeText((GLGame)game, R.string.save_error, Toast.LENGTH_LONG).show();
+					Toast.makeText((GLGame)game, R.string.save_opponent_error, Toast.LENGTH_LONG).show();
 					Log.e(TAG, "An exception occurred saving the opponent", throwable);
 				}));
 	}
@@ -315,5 +316,15 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 					}
 				})
 		);
+	}
+
+	@Override
+	public void showScreen() {
+		((GLGame)game).getParentLayout().addView(importOpponentScreenLayout);
+	}
+
+	@Override
+	public void hideScreen() {
+		((GLGame)game).getParentLayout().removeView(importOpponentScreenLayout);
 	}
 }

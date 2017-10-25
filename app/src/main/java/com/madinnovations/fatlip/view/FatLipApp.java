@@ -18,6 +18,7 @@ package com.madinnovations.fatlip.view;
 import android.app.Application;
 import android.content.ClipboardManager;
 
+import com.madinnovations.fatlip.model.User;
 import com.madinnovations.fatlip.view.di.components.ApplicationComponent;
 import com.madinnovations.fatlip.view.di.components.DaggerApplicationComponent;
 import com.madinnovations.fatlip.view.di.modules.ApplicationModule;
@@ -27,10 +28,12 @@ import com.madinnovations.fatlip.view.utils.ResourceUtils;
 /**
  * The Android Application class
  */
+@SuppressWarnings("unused")
 public class FatLipApp extends Application {
 	private ApplicationComponent applicationComponent;
 	private static ResourceUtils resourceUtils;
 	private static ClipboardManager clipboardManager;
+	private User user;
 
 	@Override
 	public void onCreate() {
@@ -38,6 +41,7 @@ public class FatLipApp extends Application {
 		this.initializeInjector();
 		resourceUtils = new AndroidResourceUtils(this);
 		clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+		user = new User();
 	}
 
 	private void initializeInjector() {
@@ -46,18 +50,18 @@ public class FatLipApp extends Application {
 				.build();
 	}
 
+	// Getters and setters
 	public ApplicationComponent getApplicationComponent() {
 		return this.applicationComponent;
 	}
-
-	/**
-	 * Gets the ResourceUtils instance.
-	 *
-	 * @return  the ResourceUtils instance.
-	 */
 	public static ResourceUtils getResourceUtils() {
 		return resourceUtils;
 	}
-
 	public static ClipboardManager getClipboardManager() { return clipboardManager; }
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 }

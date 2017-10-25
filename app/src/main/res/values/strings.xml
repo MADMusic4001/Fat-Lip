@@ -48,8 +48,10 @@
   <string name="no_mouth">No mouth found in the image</string>
   <string name="face_detector_not_available">Face detector dependencies are not yet available.</string>
   <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
-  <string name="save_success">Your opponent was successfully saved.</string>
-  <string name="save_error">An error occurred when attempting to save your opponent.</string>
+  <string name="save_opponent_success">Your opponent was successfully saved.</string>
+  <string name="save_opponent_error">An error occurred when attempting to save your opponent.</string>
+  <string name="save_scenery_success">Your scenery was successfully saved.</string>
+  <string name="save_scenery_error">An error occurred when attempting to save your scenery.</string>
   <string name="not_png">The image must be a .png file.</string>
   <string name="sign_in_success">You are now signed in to your Google account.</string>
   <string name="sign_in_fail">We were unable to sign in to a Google account. Please try again.</string>

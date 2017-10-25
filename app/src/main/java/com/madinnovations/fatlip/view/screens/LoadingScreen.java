@@ -19,6 +19,7 @@
 package com.madinnovations.fatlip.view.screens;
 
 import android.opengl.GLES20;
+import android.view.View;
 
 import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.Game;
@@ -116,4 +117,14 @@ public class LoadingScreen extends Screen {
 
 	@Override
 	public void dispose() {}
+
+	@Override
+	public void showScreen() {
+		((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void hideScreen() {
+		((GLGame)game).getGlView().setVisibility(View.GONE);
+	}
 }

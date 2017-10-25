@@ -20,7 +20,6 @@ package com.madinnovations.fatlip.controller.rxhandlers;
 
 import android.content.res.AssetManager;
 import android.os.Build;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -86,6 +85,26 @@ public class OpponentRxHandler {
 
 					JsonReader jsonReader = gson.newJsonReader(bufferedReader);
 					Opponent opponent = gson.fromJson(jsonReader, Opponent.class);
+					if(fatLipApp.getUser().getUnlockedOpponents().contains(opponent.getName())) {
+						opponents.add(opponent);
+					}
+					is.close();
+				}
+			}
+
+			File opponentsDir = Constants.getOpponentsOutputDir(fatLipApp);
+			opponentFileNames = opponentsDir.list();
+			for(String opponentFileName : opponentFileNames) {
+				if(opponentFileName.endsWith("json")) {
+					InputStream is = new FileInputStream(new File(opponentsDir, opponentFileName));
+					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+					final GsonBuilder gsonBuilder = new GsonBuilder();
+					gsonBuilder.registerTypeAdapter(Opponent.class, opponentSerializer);
+					gsonBuilder.setLenient();
+					final Gson gson = gsonBuilder.create();
+
+					JsonReader jsonReader = gson.newJsonReader(bufferedReader);
+					Opponent opponent = gson.fromJson(jsonReader, Opponent.class);
 					opponents.add(opponent);
 					is.close();
 				}
@@ -94,6 +113,7 @@ public class OpponentRxHandler {
 		});
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public Completable saveOpponent(Opponent opponent, String sourceImageFilePath) {
 		return Completable.fromCallable(() -> {
 			File dir = Constants.getOpponentsOutputDir(fatLipApp);
@@ -112,7 +132,6 @@ public class OpponentRxHandler {
 			jsonWriter.flush();
 			jsonWriter.close();
 
-			Log.d(TAG, "sourceImageFilePath = " + sourceImageFilePath);
 			File sourceFile = new File(sourceImageFilePath);
 			File destinationFile = new File(dir, opponent.getImageFileName());
 			if(!destinationFile.exists()) {

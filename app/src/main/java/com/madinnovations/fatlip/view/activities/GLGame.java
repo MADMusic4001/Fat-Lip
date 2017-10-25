@@ -252,11 +252,13 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 
 	@Override
 	public void onBackPressed() {
-    	if(previousScreens.size() == 0) {
+		if(previousScreens.size() == 0) {
 			super.onBackPressed();
 		}
 		else {
+			getCurrentScreen().hideScreen();
     		setScreen(previousScreens.pop(), false);
+    		getCurrentScreen().showScreen();
 		}
 	}
 

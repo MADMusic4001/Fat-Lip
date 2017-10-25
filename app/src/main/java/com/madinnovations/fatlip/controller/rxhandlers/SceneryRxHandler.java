@@ -20,14 +20,12 @@ package com.madinnovations.fatlip.controller.rxhandlers;
 
 import android.content.res.AssetManager;
 import android.os.Build;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.fatlip.Constants;
-import com.madinnovations.fatlip.model.Opponent;
 import com.madinnovations.fatlip.model.Scenery;
 import com.madinnovations.fatlip.model.serializers.ScenerySerializer;
 import com.madinnovations.fatlip.view.FatLipApp;
@@ -63,7 +61,7 @@ public class SceneryRxHandler {
 	private ScenerySerializer scenerySerializer;
 
 	/**
-	 * Creates a new OpponentRxHandler
+	 * Creates a new SceneryRxHandler
 	 *
 	 * @param assetManager the {@link AssetManager} instance
 	 */
@@ -83,7 +81,27 @@ public class SceneryRxHandler {
 					InputStream is = assetManager.open("scenery/" + sceneryFileName);
 					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
 					final GsonBuilder gsonBuilder = new GsonBuilder();
-					gsonBuilder.registerTypeAdapter(Opponent.class, scenerySerializer);
+					gsonBuilder.registerTypeAdapter(Scenery.class, scenerySerializer);
+					gsonBuilder.setLenient();
+					final Gson gson = gsonBuilder.create();
+
+					JsonReader jsonReader = gson.newJsonReader(bufferedReader);
+					Scenery scenery = gson.fromJson(jsonReader, Scenery.class);
+					if(fatLipApp.getUser().getUnlockedScenery().contains(scenery.getName())) {
+						sceneryList.add(scenery);
+					}
+					is.close();
+				}
+			}
+
+			File sceneryDir = Constants.getSceneryOutputDir(fatLipApp);
+			sceneryFileNames = sceneryDir.list();
+			for(String sceneryFileName : sceneryFileNames) {
+				if(sceneryFileName.endsWith("json")) {
+					InputStream is = new FileInputStream(new File(sceneryDir, sceneryFileName));
+					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+					final GsonBuilder gsonBuilder = new GsonBuilder();
+					gsonBuilder.registerTypeAdapter(Scenery.class, scenerySerializer);
 					gsonBuilder.setLenient();
 					final Gson gson = gsonBuilder.create();
 
@@ -93,6 +111,7 @@ public class SceneryRxHandler {
 					is.close();
 				}
 			}
+
 			return sceneryList;
 		}).subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread());
@@ -100,7 +119,7 @@ public class SceneryRxHandler {
 
 	public Completable saveScenery(Scenery scenery, String sourceImageFilePath) {
 		return Completable.fromCallable(() -> {
-			File dir = Constants.getOpponentsOutputDir(fatLipApp);
+			File dir = Constants.getSceneryOutputDir(fatLipApp);
 			String jsonFileName = scenery.getImageFileName().replace("png", "json");
 			File jsonFile = new File(dir, jsonFileName);
 			if(!jsonFile.exists()) {
@@ -116,7 +135,6 @@ public class SceneryRxHandler {
 			jsonWriter.flush();
 			jsonWriter.close();
 
-			Log.d(TAG, "sourceImageFilePath = " + sourceImageFilePath);
 			File sourceFile = new File(sourceImageFilePath);
 			File destinationFile = new File(dir, scenery.getImageFileName());
 			if(!destinationFile.exists()) {

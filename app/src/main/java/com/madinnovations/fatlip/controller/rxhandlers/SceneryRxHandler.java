@@ -19,7 +19,10 @@
 package com.madinnovations.fatlip.controller.rxhandlers;
 
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,24 +32,29 @@ import com.madinnovations.fatlip.Constants;
 import com.madinnovations.fatlip.model.Scenery;
 import com.madinnovations.fatlip.model.serializers.ScenerySerializer;
 import com.madinnovations.fatlip.view.FatLipApp;
+import com.madinnovations.fatlip.view.activities.GLGame;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -162,5 +170,48 @@ public class SceneryRxHandler {
 			}
 			return true;
 		});
+	}
+
+	/**
+	 * Creates a Single<Bitmap> reactive observable to read a scenery bitmap from disk.
+	 *
+	 * @param scenery  the Scenery whose Bitmap is to be loaded
+	 * @return a Single<Bitmap> reactive observable
+	 */
+	public Single<Bitmap> readSceneryBitmap(Scenery scenery) {
+		return Single.fromCallable(new Callable<Bitmap>() {
+			@Override
+			public Bitmap call() throws Exception {
+				InputStream stream = null;
+				try {
+					if (scenery.isCustom()) {
+						try {
+							stream = new FileInputStream(new File(Constants.getSceneryOutputDir(fatLipApp),
+																  scenery.getImageFileName()));
+						}
+						catch (FileNotFoundException e) {
+							Log.e(TAG, "Exception caught opening scenery file", e);
+							throw new RuntimeException(e);
+						}
+					}
+					else {
+						try {
+							stream = assetManager.open("scenery/" + scenery.getImageFileName());
+						}
+						catch (IOException e) {
+							Log.e(TAG, "Exception caught opening scenery file", e);
+							throw new RuntimeException(e);
+						}
+					}
+					return BitmapFactory.decodeStream(stream);
+				}
+				finally {
+					if(stream != null) {
+						stream.close();
+					}
+				}
+			}
+		}).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 }

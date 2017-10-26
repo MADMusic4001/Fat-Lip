@@ -31,7 +31,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.madinnovations.fatlip.R;
@@ -84,23 +83,8 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 		ScreenComponent screenComponent = ((FatLipApp)((GLGame)game).getApplication()).getApplicationComponent()
 				.newScreenComponent(new ScreenModule(this));
 		screenComponent.injectInto(this);
-
-		((GLGame)game).runOnUiThread(() -> {
-			LinearLayout parentLayout = ((GLGame)game).getParentLayout();
-			importSceneryScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(
-					R.layout.import_scenery_screen,null);
-			parentLayout.addView(importSceneryScreenLayout);
-			nameEditText = ((GLGame)game).findViewById(R.id.name_edit);
-			initNameEdit();
-			browseButton = ((GLGame)game).findViewById(R.id.select_file_button);
-			initBrowseButton();
-			sceneryView = ((GLGame)game).findViewById(R.id.scenery_view);
-			saveButton = ((GLGame)game).findViewById(R.id.save_button);
-			initSaveButton();
-			backButton = ((GLGame)game).findViewById(R.id.back_button);
-			initBackButton();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
-		});
+		importSceneryScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(
+				R.layout.import_scenery_screen,null);
 	}
 
 	@Override
@@ -258,11 +242,23 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 
 	@Override
 	public void showScreen() {
-		((GLGame)game).getParentLayout().addView(importSceneryScreenLayout);
+		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().addView(importSceneryScreenLayout);
+			nameEditText = ((GLGame)game).findViewById(R.id.name_edit);
+			initNameEdit();
+			browseButton = ((GLGame)game).findViewById(R.id.select_file_button);
+			initBrowseButton();
+			sceneryView = ((GLGame)game).findViewById(R.id.scenery_view);
+			saveButton = ((GLGame)game).findViewById(R.id.save_button);
+			initSaveButton();
+			backButton = ((GLGame)game).findViewById(R.id.back_button);
+			initBackButton();
+			((GLGame)game).getGlView().setVisibility(View.GONE);
+		});
 	}
 
 	@Override
 	public void hideScreen() {
-		((GLGame)game).getParentLayout().removeView(importSceneryScreenLayout);
+		((GLGame)game).runOnUiThread(() -> ((GLGame)game).getParentLayout().removeView(importSceneryScreenLayout));
 	}
 }

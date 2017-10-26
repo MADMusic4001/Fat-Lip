@@ -39,6 +39,7 @@ import com.madinnovations.fatlip.controller.rxhandlers.WeaponRxHandler;
 import com.madinnovations.fatlip.model.Assets;
 import com.madinnovations.fatlip.model.Opponent;
 import com.madinnovations.fatlip.model.Scenery;
+import com.madinnovations.fatlip.model.SetupInfo;
 import com.madinnovations.fatlip.model.Weapon;
 import com.madinnovations.fatlip.view.FatLipApp;
 import com.madinnovations.fatlip.view.activities.GLGame;
@@ -50,6 +51,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -77,7 +79,7 @@ public class SetupScreen extends Screen {
 	private   LinearLayout      sceneryLayout;
 	private   Button            backButton;
 	private   Button            startButton;
-	private   ImageView         selectedOpponent;
+	private   SetupInfo         setupInfo = new SetupInfo();
 
 	/**
 	 * Creates a new SetupScreen instance
@@ -96,21 +98,6 @@ public class SetupScreen extends Screen {
 			LinearLayout parentLayout = ((GLGame)game).getParentLayout();
 			setupScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.setup_screen,
 																							null);
-			parentLayout.addView(setupScreenLayout);
-			opponentsLayout = ((GLGame)game).findViewById(R.id.opponents_layout);
-			opponentTextView = ((GLGame)game).findViewById(R.id.opponents_textview);
-			initOpponentsLayout();
-			weaponsLayout = ((GLGame)game).findViewById(R.id.weapons_layout);
-			weaponTextView = ((GLGame)game).findViewById(R.id.weapons_textview);
-			initWeaponsLayout();
-			sceneryLayout = ((GLGame)game).findViewById(R.id.scenery_layout);
-			sceneryTextView = ((GLGame)game).findViewById(R.id.scenery_textview);
-			initSceneryLayout();
-			backButton = ((GLGame)game).findViewById(R.id.back_button);
-			initBackButton();
-			startButton = ((GLGame)game).findViewById(R.id.start_button);
-			initStartButton();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 
@@ -148,6 +135,7 @@ public class SetupScreen extends Screen {
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
+					setupInfo.setOpponent(result.get(new Random().nextInt(result.size())));
 					for(Opponent opponent : result) {
 						InputStream is;
 						try {
@@ -185,6 +173,7 @@ public class SetupScreen extends Screen {
 										selection = true;
 										opponentTextView.setText(((GLGame)game).getString(
 												R.string.select_opponent, opponent.getName()));
+										setupInfo.setOpponent(opponent);
 									}
 								}
 							}
@@ -192,6 +181,7 @@ public class SetupScreen extends Screen {
 								opponentTextView.setText(((GLGame)game).getString(
 										R.string.select_opponent,
 										((GLGame)game).getString(R.string.random)));
+								setupInfo.setOpponent(result.get(new Random().nextInt(result.size())));
 							}
 						});
 						opponentsLayout.addView(imageView);
@@ -206,6 +196,7 @@ public class SetupScreen extends Screen {
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
+					setupInfo.setWeapon(result.get(new Random().nextInt(result.size())));
 					for(Weapon weapon : result) {
 						InputStream is;
 						try {
@@ -237,6 +228,7 @@ public class SetupScreen extends Screen {
 										selection = true;
 										weaponTextView.setText(((GLGame)game).getString(
 												R.string.select_weapon, weapon.getName()));
+										setupInfo.setWeapon(weapon);
 									}
 								}
 							}
@@ -244,6 +236,7 @@ public class SetupScreen extends Screen {
 								weaponTextView.setText(((GLGame)game).getString(
 										R.string.select_weapon,
 										((GLGame)game).getString(R.string.random)));
+								setupInfo.setWeapon(result.get(new Random().nextInt(result.size())));
 							}
 						});
 						weaponsLayout.addView(imageView);
@@ -258,6 +251,7 @@ public class SetupScreen extends Screen {
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
+					setupInfo.setScenery(result.get(new Random().nextInt(result.size())));
 					for(Scenery scenery : result) {
 						InputStream is;
 						try {
@@ -295,6 +289,7 @@ public class SetupScreen extends Screen {
 										sceneryTextView.setText(
 												((GLGame)game).getString(R.string.select_scenery, scenery.getName()));
 										selection = true;
+										setupInfo.setScenery(scenery);
 									}
 								}
 							}
@@ -303,6 +298,7 @@ public class SetupScreen extends Screen {
 										((GLGame)game).getString(
 												R.string.select_scenery,
 												((GLGame)game).getString(R.string.random)));
+								setupInfo.setScenery(result.get(new Random().nextInt(result.size())));
 							}
 						});
 						sceneryLayout.addView(imageView);
@@ -325,7 +321,9 @@ public class SetupScreen extends Screen {
 		startButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
 			((GLGame)game).getParentLayout().removeView(setupScreenLayout);
 			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
-			game.setScreen(new GameScreen(game), true);
+			GameScreen gameScreen = new GameScreen(game);
+			gameScreen.setSetupInfo(setupInfo);
+			game.setScreen(gameScreen, true);
 			if(Settings.soundEnabled) {
 				Assets.click.play(1);
 			}
@@ -334,11 +332,27 @@ public class SetupScreen extends Screen {
 
 	@Override
 	public void showScreen() {
-		((GLGame)game).getParentLayout().addView(setupScreenLayout);
+		((GLGame) game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().addView(setupScreenLayout);
+			opponentsLayout = ((GLGame)game).findViewById(R.id.opponents_layout);
+			opponentTextView = ((GLGame)game).findViewById(R.id.opponents_textview);
+			initOpponentsLayout();
+			weaponsLayout = ((GLGame)game).findViewById(R.id.weapons_layout);
+			weaponTextView = ((GLGame)game).findViewById(R.id.weapons_textview);
+			initWeaponsLayout();
+			sceneryLayout = ((GLGame)game).findViewById(R.id.scenery_layout);
+			sceneryTextView = ((GLGame)game).findViewById(R.id.scenery_textview);
+			initSceneryLayout();
+			backButton = ((GLGame)game).findViewById(R.id.back_button);
+			initBackButton();
+			startButton = ((GLGame)game).findViewById(R.id.start_button);
+			initStartButton();
+			((GLGame)game).getGlView().setVisibility(View.GONE);
+		});
 	}
 
 	@Override
 	public void hideScreen() {
-		((GLGame)game).getParentLayout().removeView(setupScreenLayout);
+		((GLGame)game).runOnUiThread(() -> ((GLGame)game).getParentLayout().removeView(setupScreenLayout));
 	}
 }

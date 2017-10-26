@@ -56,4 +56,5 @@
   <string name="not_png">The image must be a .png file.</string>
   <string name="sign_in_success">You are now signed in to your Google account.</string>
   <string name="sign_in_fail">We were unable to sign in to a Google account. Please try again.</string>
+  <string name="scenery_read_fail">Failed to read the scenery bitmap.</string>
 </resources>

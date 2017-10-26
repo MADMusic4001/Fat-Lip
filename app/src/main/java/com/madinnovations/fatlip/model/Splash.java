@@ -39,13 +39,13 @@ public class Splash {
 			// Order of coordinates: X, Y, S, T
 
 			// Triangles
-			 -1.0f, -1.0f,  0.0f, 1.0f, // bottom right
-			  1.0f,  1.0f,  1.0f, 0.0f, // top left
-			 -1.0f,  1.0f,  0.0f, 0.0f,  // top right
+			 -1.0f, -1.0f,  0.0f, 1.0f, // bottom left
+			  1.0f,  1.0f,  1.0f, 0.0f, // top right
+			 -1.0f,  1.0f,  0.0f, 0.0f,  // top left
 
-			 -1.0f, -1.0f,  0.0f, 1.0f, // bottom right
-		      1.0f, -1.0f,  1.0f, 1.0f, // bottom left
-			  1.0f,  1.0f,  1.0f, 0.0f }; // top left
+			 -1.0f, -1.0f,  0.0f, 1.0f, // bottom left
+		      1.0f, -1.0f,  1.0f, 1.0f, // bottom right
+			  1.0f,  1.0f,  1.0f, 0.0f }; // top right
 
 	private final VertexArray vertexArray;
 

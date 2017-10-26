@@ -18,17 +18,47 @@
 
 package com.madinnovations.fatlip.view.screens;
 
+import android.graphics.Bitmap;
+import android.opengl.GLES20;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.Game;
+import com.madinnovations.fatlip.controller.rxhandlers.SceneryRxHandler;
+import com.madinnovations.fatlip.model.SetupInfo;
+import com.madinnovations.fatlip.model.Splash;
+import com.madinnovations.fatlip.view.FatLipApp;
 import com.madinnovations.fatlip.view.activities.GLGame;
+import com.madinnovations.fatlip.view.di.components.ScreenComponent;
+import com.madinnovations.fatlip.view.di.modules.ScreenModule;
+import com.madinnovations.fatlip.view.framework.FramesPerSecondLogger;
 import com.madinnovations.fatlip.view.framework.Screen;
+import com.madinnovations.fatlip.view.programs.SplashShaderProgram;
+import com.madinnovations.fatlip.view.utils.TextureHelper;
+
+import javax.inject.Inject;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.disposables.Disposable;
+
+import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glViewport;
 
 /**
  * Renders the game screen
  */
 @SuppressWarnings("WeakerAccess")
 public class GameScreen extends Screen {
+	private static final String                TAG       = "GameScreen";
+	@Inject
+	protected SceneryRxHandler    sceneryRxHandler;
+	private FramesPerSecondLogger fpsLogger = new FramesPerSecondLogger();
+	private SetupInfo             setupInfo;
+	private Splash                splash;
+	private int                   splashTextureId;
+	private SplashShaderProgram   splashProgram = null;
 
 	/**
 	 * Creates a new GameScreen instance
@@ -37,11 +67,16 @@ public class GameScreen extends Screen {
 	 */
 	public GameScreen(Game game) {
 		super(game);
+		ScreenComponent screenComponent = ((FatLipApp)((GLGame)game).getApplication()).getApplicationComponent()
+				.newScreenComponent(new ScreenModule(this));
+		screenComponent.injectInto(this);
 	}
 
 	@Override
 	public void onCreate(int width, int height) {
+		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
 
+		glViewport(0, 0, width, height);
 	}
 
 	@Override
@@ -51,7 +86,16 @@ public class GameScreen extends Screen {
 
 	@Override
 	public void present(float deltaTime) {
+		fpsLogger.logFrame();
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
+		if(splashProgram != null) {
+			splashProgram.useProgram();
+			splashProgram.setUniforms(splashTextureId);
+			splash.bindData(splashProgram);
+			splash.draw();
+			splash.unbindData(splashProgram);
+		}
 	}
 
 	@Override
@@ -77,5 +121,37 @@ public class GameScreen extends Screen {
 	@Override
 	public void hideScreen() {
 		((GLGame)game).getGlView().setVisibility(View.GONE);
+	}
+
+	private void initScenery() {
+		if(setupInfo != null) {
+			splash = new Splash();
+			sceneryRxHandler.readSceneryBitmap(setupInfo.getScenery()).subscribe(new SingleObserver<Bitmap>() {
+				@Override
+				public void onSubscribe(Disposable d) {}
+				@Override
+				public void onSuccess(Bitmap bitmap) {
+					splashTextureId = TextureHelper.loadTexture(bitmap);
+					Log.d(TAG, "onSuccess: splashTextureId = " + splashTextureId);
+					splashProgram = new SplashShaderProgram((GLGame) game);
+					Log.d(TAG, "onSuccess: splashProgramId = " + splashProgram.getProgram());
+					bitmap.recycle();
+				}
+				@Override
+				public void onError(Throwable e) {
+					Log.e(TAG, "onError: Exception caught loading scenery bitmap", e);
+					Toast.makeText((GLGame)GameScreen.this.game, R.string.scenery_read_fail, Toast.LENGTH_LONG).show();
+				}
+			});
+		}
+	}
+
+	// Getters and setters
+	public SetupInfo getSetupInfo() {
+		return setupInfo;
+	}
+	public void setSetupInfo(SetupInfo setupInfo) {
+		this.setupInfo = setupInfo;
+		initScenery();
 	}
 }

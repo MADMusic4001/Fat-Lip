@@ -23,7 +23,6 @@ import android.opengl.GLES20;
 import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import com.madinnovations.fatlip.R;
 import com.madinnovations.fatlip.controller.framework.Game;
@@ -49,15 +48,7 @@ public class HelpScreen extends Screen {
 	@SuppressLint("InflateParams")
 	public HelpScreen(final Game game) {
 		super(game);
-		((GLGame)game).runOnUiThread(() -> {
-			LinearLayout parentLayout = ((GLGame)game).getParentLayout();
-			helpScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.help_screen,
-																							null);
-			parentLayout.addView(helpScreenLayout);
-			backButton = ((GLGame)game).findViewById(R.id.back_button);
-			initBackButton();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
-		});
+		helpScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.help_screen, null);
 	}
 
 	@Override
@@ -96,11 +87,16 @@ public class HelpScreen extends Screen {
 
 	@Override
 	public void showScreen() {
-		((GLGame)game).getParentLayout().addView(helpScreenLayout);
+		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().addView(helpScreenLayout);
+			backButton = ((GLGame)game).findViewById(R.id.back_button);
+			initBackButton();
+			((GLGame)game).getGlView().setVisibility(View.GONE);
+		});
 	}
 
 	@Override
 	public void hideScreen() {
-		((GLGame)game).getParentLayout().removeView(helpScreenLayout);
+		((GLGame)game).runOnUiThread(() -> ((GLGame)game).getParentLayout().removeView(helpScreenLayout));
 	}
 }

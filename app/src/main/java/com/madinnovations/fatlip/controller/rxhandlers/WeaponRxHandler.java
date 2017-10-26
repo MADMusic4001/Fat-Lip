@@ -19,13 +19,17 @@
 package com.madinnovations.fatlip.controller.rxhandlers;
 
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.madinnovations.fatlip.Constants;
+import com.madinnovations.fatlip.model.Opponent;
 import com.madinnovations.fatlip.model.Weapon;
 import com.madinnovations.fatlip.model.serializers.WeaponSerializer;
 import com.madinnovations.fatlip.view.FatLipApp;
@@ -34,19 +38,23 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -143,5 +151,36 @@ public class WeaponRxHandler {
 			}
 			return true;
 		});
+	}
+
+	/**
+	 * Creates a Single<Bitmap> reactive observable to read a weapon bitmap from disk.
+	 *
+	 * @param weapon the Weapon whose Bitmap is to be loaded
+	 * @return a Single<Bitmap> reactive observable
+	 */
+	public Single<Bitmap> readWeaponBitmap(Weapon weapon) {
+		return Single.fromCallable(new Callable<Bitmap>() {
+			@Override
+			public Bitmap call() throws Exception {
+				InputStream stream = null;
+				try {
+					try {
+						stream = assetManager.open("weapons/" + weapon.getImageFileName());
+					}
+					catch (IOException e) {
+						Log.e(TAG, "Exception caught opening weapon bitmap file", e);
+						throw new RuntimeException(e);
+					}
+					return BitmapFactory.decodeStream(stream);
+				}
+				finally {
+					if(stream != null) {
+						stream.close();
+					}
+				}
+			}
+		}).subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread());
 	}
 }

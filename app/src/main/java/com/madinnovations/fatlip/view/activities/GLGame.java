@@ -346,12 +346,14 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 		if (newScreen == null) {
 			throw new IllegalArgumentException("Screen must not be null");
 		}
+		screen.hideScreen();
         screen.pause();
         screen.dispose();
 		Point size = new Point();
 		getWindow().getWindowManager().getDefaultDisplay().getSize(size);
 		newScreen.onCreate(size.x, size.y);
         newScreen.resume();
+        newScreen.showScreen();
         newScreen.update(0);
         if(addToStack) {
         	previousScreens.push(screen);

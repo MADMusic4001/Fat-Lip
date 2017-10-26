@@ -56,18 +56,6 @@ public class HomeScreen extends Screen {
 			LinearLayout parentLayout = ((GLGame)game).getParentLayout();
 			homeScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.home_screen,
 					null);
-			parentLayout.addView(homeScreenLayout);
-			playButton = ((GLGame)game).findViewById(R.id.play_button);
-			initPlayButton();
-			helpButton = ((GLGame)game).findViewById(R.id.help_button);
-			initHelpButton();
-			importOpponentButton = ((GLGame)game).findViewById(R.id.import_opponent_button);
-			initImportOpponentButton();
-			importSceneryButton = ((GLGame)game).findViewById(R.id.import_scenery_button);
-			initImportSceneryButton();
-			highScoresListview = ((GLGame)game).findViewById(R.id.high_scores_listview);
-			initHighScoresList();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 
@@ -164,11 +152,24 @@ public class HomeScreen extends Screen {
 
 	@Override
 	public void showScreen() {
-		((GLGame)game).getParentLayout().addView(homeScreenLayout);
+		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().addView(homeScreenLayout);
+			playButton = ((GLGame)game).findViewById(R.id.play_button);
+			initPlayButton();
+			helpButton = ((GLGame)game).findViewById(R.id.help_button);
+			initHelpButton();
+			importOpponentButton = ((GLGame)game).findViewById(R.id.import_opponent_button);
+			initImportOpponentButton();
+			importSceneryButton = ((GLGame)game).findViewById(R.id.import_scenery_button);
+			initImportSceneryButton();
+			highScoresListview = ((GLGame)game).findViewById(R.id.high_scores_listview);
+			initHighScoresList();
+			((GLGame)game).getGlView().setVisibility(View.GONE);
+		});
 	}
 
 	@Override
 	public void hideScreen() {
-		((GLGame)game).getParentLayout().removeView(homeScreenLayout);
+		((GLGame)game).runOnUiThread(() -> ((GLGame)game).getParentLayout().removeView(homeScreenLayout));
 	}
 }

@@ -65,7 +65,6 @@ public class LoadingScreen extends Screen {
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
 
 		glViewport(0, 0, width, height);
-		float ratio = (float)width / height;
 
 		textureId = TextureHelper.loadTexture((GLGame)game, R.drawable.fatlip);
 		splashProgram = new SplashShaderProgram((GLGame)game);
@@ -120,11 +119,11 @@ public class LoadingScreen extends Screen {
 
 	@Override
 	public void showScreen() {
-		((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+		((GLGame)game).runOnUiThread(() -> ((GLGame)game).getGlView().setVisibility(View.VISIBLE));
 	}
 
 	@Override
 	public void hideScreen() {
-		((GLGame)game).getGlView().setVisibility(View.GONE);
+		((GLGame)game).runOnUiThread(() -> ((GLGame)game).getGlView().setVisibility(View.GONE));
 	}
 }

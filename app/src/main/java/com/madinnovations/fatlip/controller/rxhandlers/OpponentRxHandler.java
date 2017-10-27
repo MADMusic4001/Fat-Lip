@@ -185,7 +185,7 @@ public class OpponentRxHandler {
 				try {
 					if (opponent.isCustom()) {
 						try {
-							stream = new FileInputStream(new File(Constants.getSceneryOutputDir(fatLipApp),
+							stream = new FileInputStream(new File(Constants.getOpponentsOutputDir(fatLipApp),
 																		 opponent.getImageFileName()));
 						}
 						catch (FileNotFoundException e) {

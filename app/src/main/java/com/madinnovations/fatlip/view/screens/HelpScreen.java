@@ -86,6 +86,7 @@ public class HelpScreen extends Screen {
 	@Override
 	public void showScreen() {
 		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeAllViews();
 			((GLGame)game).getParentLayout().addView(helpScreenLayout);
 			backButton = ((GLGame)game).findViewById(R.id.back_button);
 			initBackButton();

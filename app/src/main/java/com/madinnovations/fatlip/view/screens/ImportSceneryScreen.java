@@ -241,6 +241,7 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 	@Override
 	public void showScreen() {
 		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeAllViews();
 			((GLGame)game).getParentLayout().addView(importSceneryScreenLayout);
 			nameEditText = ((GLGame)game).findViewById(R.id.name_edit);
 			initNameEdit();

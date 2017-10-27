@@ -303,6 +303,7 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 	@Override
 	public void showScreen() {
 		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeAllViews();
 			((GLGame)game).getParentLayout().addView(importOpponentScreenLayout);
 			nameEditText = ((GLGame)game).findViewById(R.id.name_edit);
 			initNameEdit();

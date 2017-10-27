@@ -135,6 +135,7 @@ public class SetupScreen extends Screen {
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
+					opponentsLayout.removeAllViews();
 					setupInfo.setOpponent(result.get(new Random().nextInt(result.size())));
 					for(Opponent opponent : result) {
 						InputStream is;
@@ -196,6 +197,7 @@ public class SetupScreen extends Screen {
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
+					weaponsLayout.removeAllViews();
 					setupInfo.setWeapon(result.get(new Random().nextInt(result.size())));
 					for(Weapon weapon : result) {
 						InputStream is;
@@ -251,6 +253,7 @@ public class SetupScreen extends Screen {
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(result -> {
+					sceneryLayout.removeAllViews();
 					setupInfo.setScenery(result.get(new Random().nextInt(result.size())));
 					for(Scenery scenery : result) {
 						InputStream is;
@@ -329,6 +332,7 @@ public class SetupScreen extends Screen {
 	@Override
 	public void showScreen() {
 		((GLGame) game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeAllViews();
 			((GLGame)game).getParentLayout().addView(setupScreenLayout);
 			opponentsLayout = ((GLGame)game).findViewById(R.id.opponents_layout);
 			opponentTextView = ((GLGame)game).findViewById(R.id.opponents_textview);

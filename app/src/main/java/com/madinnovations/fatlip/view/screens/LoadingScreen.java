@@ -133,6 +133,7 @@ public class LoadingScreen extends Screen {
 		Log.d(TAG, "showScreen: ");
 		if(glView == null) {
 			((GLGame) game).runOnUiThread(() -> {
+				((GLGame)game).getParentLayout().removeAllViews();
 				glView = new GLSurfaceView(((GLGame) game));
 				((GLGame) game).getParentLayout().addView(glView);
 				glView.setEGLContextClientVersion(2);

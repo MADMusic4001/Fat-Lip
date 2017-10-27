@@ -140,6 +140,7 @@ public class HomeScreen extends Screen {
 	@Override
 	public void showScreen() {
 		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeAllViews();
 			((GLGame)game).getParentLayout().addView(homeScreenLayout);
 			playButton = ((GLGame)game).findViewById(R.id.play_button);
 			initPlayButton();

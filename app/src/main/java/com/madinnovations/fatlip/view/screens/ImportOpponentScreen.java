@@ -292,8 +292,6 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 	private void initBackButton() {
 		backButton.setOnClickListener(v -> (
 				(GLGame)game).runOnUiThread(() -> {
-					((GLGame)game).getParentLayout().removeView(importOpponentScreenLayout);
-					((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 					game.setScreen(new HomeScreen(game), true);
 					if(Settings.soundEnabled) {
 						Assets.click.play(1);
@@ -315,7 +313,6 @@ public class ImportOpponentScreen extends Screen implements FileSelectorDialogFr
 			initSaveButton();
 			backButton = ((GLGame)game).findViewById(R.id.back_button);
 			initBackButton();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 

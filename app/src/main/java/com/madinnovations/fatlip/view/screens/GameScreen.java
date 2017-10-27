@@ -20,6 +20,7 @@ package com.madinnovations.fatlip.view.screens;
 
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -41,7 +42,9 @@ import com.madinnovations.fatlip.view.utils.TextureHelper;
 import javax.inject.Inject;
 
 import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glViewport;
@@ -54,9 +57,11 @@ public class GameScreen extends Screen {
 	private static final String                TAG       = "GameScreen";
 	@Inject
 	protected SceneryRxHandler    sceneryRxHandler;
+	private GLSurfaceView         glView;
 	private FramesPerSecondLogger fpsLogger = new FramesPerSecondLogger();
 	private SetupInfo             setupInfo;
-	private Splash                splash;
+	private Bitmap                sceneryBitmap = null;
+	private Splash                splash = null;
 	private int                   splashTextureId;
 	private SplashShaderProgram   splashProgram = null;
 
@@ -74,6 +79,7 @@ public class GameScreen extends Screen {
 
 	@Override
 	public void onCreate(int width, int height) {
+		Log.d(TAG, "onCreate: ");
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
 
 		glViewport(0, 0, width, height);
@@ -81,7 +87,9 @@ public class GameScreen extends Screen {
 
 	@Override
 	public void update(float deltaTime) {
-
+		if(splash == null && sceneryBitmap != null) {
+			initScenery();
+		}
 	}
 
 	@Override
@@ -115,34 +123,33 @@ public class GameScreen extends Screen {
 
 	@Override
 	public void showScreen() {
-		((GLGame)game).getGlView().setVisibility(View.VISIBLE);
+		if(glView == null) {
+			((GLGame) game).runOnUiThread(() -> {
+				glView = new GLSurfaceView(((GLGame) game));
+				((GLGame) game).getParentLayout().addView(glView);
+				glView.setEGLContextClientVersion(2);
+				glView.setRenderer(((GLGame) game));
+				glView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+				initScenery();
+			});
+		}
 	}
 
 	@Override
 	public void hideScreen() {
-		((GLGame)game).getGlView().setVisibility(View.GONE);
+		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(glView);
+			glView = null;
+		});
 	}
 
 	private void initScenery() {
-		if(setupInfo != null) {
+		if(sceneryBitmap != null) {
 			splash = new Splash();
-			sceneryRxHandler.readSceneryBitmap(setupInfo.getScenery()).subscribe(new SingleObserver<Bitmap>() {
-				@Override
-				public void onSubscribe(Disposable d) {}
-				@Override
-				public void onSuccess(Bitmap bitmap) {
-					splashTextureId = TextureHelper.loadTexture(bitmap);
-					Log.d(TAG, "onSuccess: splashTextureId = " + splashTextureId);
-					splashProgram = new SplashShaderProgram((GLGame) game);
-					Log.d(TAG, "onSuccess: splashProgramId = " + splashProgram.getProgram());
-					bitmap.recycle();
-				}
-				@Override
-				public void onError(Throwable e) {
-					Log.e(TAG, "onError: Exception caught loading scenery bitmap", e);
-					Toast.makeText((GLGame)GameScreen.this.game, R.string.scenery_read_fail, Toast.LENGTH_LONG).show();
-				}
-			});
+			splashTextureId = TextureHelper.loadTexture(sceneryBitmap);
+			Log.d(TAG, "onSuccess: splashTextureId = " + splashTextureId);
+			splashProgram = new SplashShaderProgram((GLGame) game);
+			Log.d(TAG, "onSuccess: splashProgramId = " + splashProgram.getProgram());
 		}
 	}
 
@@ -152,6 +159,21 @@ public class GameScreen extends Screen {
 	}
 	public void setSetupInfo(SetupInfo setupInfo) {
 		this.setupInfo = setupInfo;
-		initScenery();
+		sceneryRxHandler.readSceneryBitmap(setupInfo.getScenery())
+				.observeOn(Schedulers.io())
+				.subscribeOn(AndroidSchedulers.mainThread())
+				.subscribe(new SingleObserver<Bitmap>() {
+					@Override
+					public void onSubscribe(Disposable d) {}
+					@Override
+					public void onSuccess(Bitmap bitmap) {
+						sceneryBitmap = bitmap;
+					}
+					@Override
+					public void onError(Throwable e) {
+						Log.e(TAG, "onError: Exception caught loading scenery bitmap", e);
+						Toast.makeText((GLGame)GameScreen.this.game, R.string.scenery_read_fail, Toast.LENGTH_LONG).show();
+					}
+				});
 	}
 }

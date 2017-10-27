@@ -76,8 +76,6 @@ public class HelpScreen extends Screen {
 
 	private void initBackButton() {
 		backButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
-			((GLGame)game).getParentLayout().removeView(helpScreenLayout);
-			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 			game.setScreen(new HomeScreen(game), true);
 			if(Settings.soundEnabled) {
 				Assets.click.play(1);
@@ -91,7 +89,6 @@ public class HelpScreen extends Screen {
 			((GLGame)game).getParentLayout().addView(helpScreenLayout);
 			backButton = ((GLGame)game).findViewById(R.id.back_button);
 			initBackButton();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 

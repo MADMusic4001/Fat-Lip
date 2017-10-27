@@ -25,7 +25,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Point;
-import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -80,7 +79,7 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
     private GoogleApiClient googleApiClient = null;
 	private BillingClient billingClient;
 	private boolean resolvingError = false;
-	private GLSurfaceView glView;
+//	private GLSurfaceView glView;
 	private LinearLayout  parentLayout;
 	private Audio         audio;
 	private Input         input;
@@ -106,14 +105,15 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.opengl_layout);
 		parentLayout = findViewById(R.id.parent_layout);
-        glView = findViewById(R.id.surface_view);
-		glView.setEGLContextClientVersion(2);
-        glView.setRenderer(this);
-		glView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+//        glView = new GLSurfaceView(this);
+//        parentLayout.addView(glView);
+//		glView.setEGLContextClientVersion(2);
+//        glView.setRenderer(this);
+//		glView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         fileIO = new AndroidFileIO(this);
         audio = new AndroidAudio(this);
-        input = new AndroidInput(this, glView, 1, 1);
+        input = new AndroidInput(this, parentLayout, 1, 1);
     }
 
 	@Override
@@ -166,8 +166,16 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 	@Override
     public void onResume() {
 		super.onResume();
-        glView.onResume();
-    }
+		synchronized(stateChanged) {
+			if(state == GLGameState.Initialized) {
+				screen = getStartScreen();
+				screen.showScreen();
+			}
+			state = GLGameState.Running;
+			screen.resume();
+			startTime = System.nanoTime();
+		}
+	}
 
 	@Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -184,6 +192,7 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
 	@Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
 		if(screen != null) {
+			Log.d(TAG, "onSurfaceChanged: width = " + width);
 			screen.onCreate(width, height);
 		}
 	}
@@ -240,7 +249,7 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
                 }
             }
         }
-        glView.onPause();
+//        glView.onPause();
         super.onPause();
     }
 
@@ -351,10 +360,8 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
         screen.dispose();
 		Point size = new Point();
 		getWindow().getWindowManager().getDefaultDisplay().getSize(size);
-		newScreen.onCreate(size.x, size.y);
         newScreen.resume();
         newScreen.showScreen();
-        newScreen.update(0);
         if(addToStack) {
         	previousScreens.push(screen);
 		}
@@ -363,9 +370,9 @@ public abstract class GLGame extends Activity implements Game, Renderer, GoogleA
     public Screen getCurrentScreen() {
         return screen;
     }
-	public GLSurfaceView getGlView() {
-		return glView;
-	}
+//	public GLSurfaceView getGlView() {
+//		return glView;
+//	}
 	public LinearLayout getParentLayout() {
 		return parentLayout;
 	}

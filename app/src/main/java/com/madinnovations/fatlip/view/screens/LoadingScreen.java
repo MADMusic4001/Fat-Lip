@@ -19,6 +19,8 @@
 package com.madinnovations.fatlip.view.screens;
 
 import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.View;
 
 import com.madinnovations.fatlip.R;
@@ -44,6 +46,7 @@ import static android.opengl.GLES20.glViewport;
 @SuppressWarnings("unused")
 public class LoadingScreen extends Screen {
 	private static final String TAG = "LoadingScreen";
+	private GLSurfaceView glView = null;
 	private final Splash splash;
 	private FramesPerSecondLogger fpsLogger = new FramesPerSecondLogger();
 	private SplashShaderProgram splashProgram;
@@ -62,6 +65,14 @@ public class LoadingScreen extends Screen {
 
 	@Override
 	public void onCreate(int width, int height) {
+		if(glView == null) {
+			glView = new GLSurfaceView(((GLGame) game));
+			((GLGame) game).getParentLayout().addView(glView);
+			glView.setEGLContextClientVersion(2);
+			glView.setRenderer(((GLGame) game));
+			glView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+		}
+
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
 
 		glViewport(0, 0, width, height);
@@ -119,11 +130,23 @@ public class LoadingScreen extends Screen {
 
 	@Override
 	public void showScreen() {
-		((GLGame)game).runOnUiThread(() -> ((GLGame)game).getGlView().setVisibility(View.VISIBLE));
+		Log.d(TAG, "showScreen: ");
+		if(glView == null) {
+			((GLGame) game).runOnUiThread(() -> {
+				glView = new GLSurfaceView(((GLGame) game));
+				((GLGame) game).getParentLayout().addView(glView);
+				glView.setEGLContextClientVersion(2);
+				glView.setRenderer(((GLGame) game));
+				glView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+			});
+		}
 	}
 
 	@Override
 	public void hideScreen() {
-		((GLGame)game).runOnUiThread(() -> ((GLGame)game).getGlView().setVisibility(View.GONE));
+		((GLGame)game).runOnUiThread(() -> {
+			((GLGame)game).getParentLayout().removeView(glView);
+			glView = null;
+		});
 	}
 }

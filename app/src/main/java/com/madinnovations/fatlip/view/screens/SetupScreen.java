@@ -308,8 +308,6 @@ public class SetupScreen extends Screen {
 
 	private void initBackButton() {
 		backButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
-			((GLGame)game).getParentLayout().removeView(setupScreenLayout);
-			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 			game.setScreen(new HomeScreen(game), true);
 			if(Settings.soundEnabled) {
 				Assets.click.play(1);
@@ -319,8 +317,6 @@ public class SetupScreen extends Screen {
 
 	private void initStartButton() {
 		startButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
-			((GLGame)game).getParentLayout().removeView(setupScreenLayout);
-			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 			GameScreen gameScreen = new GameScreen(game);
 			gameScreen.setSetupInfo(setupInfo);
 			game.setScreen(gameScreen, true);
@@ -347,7 +343,6 @@ public class SetupScreen extends Screen {
 			initBackButton();
 			startButton = ((GLGame)game).findViewById(R.id.start_button);
 			initStartButton();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 

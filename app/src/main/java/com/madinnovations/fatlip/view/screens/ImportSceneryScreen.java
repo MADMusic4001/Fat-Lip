@@ -230,8 +230,6 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 	private void initBackButton() {
 		backButton.setOnClickListener(v -> (
 				(GLGame)game).runOnUiThread(() -> {
-					((GLGame)game).getParentLayout().removeView(importSceneryScreenLayout);
-					((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 					game.setScreen(new HomeScreen(game), true);
 					if(Settings.soundEnabled) {
 						Assets.click.play(1);
@@ -253,7 +251,6 @@ public class ImportSceneryScreen extends Screen implements FileSelectorDialogFra
 			initSaveButton();
 			backButton = ((GLGame)game).findViewById(R.id.back_button);
 			initBackButton();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 

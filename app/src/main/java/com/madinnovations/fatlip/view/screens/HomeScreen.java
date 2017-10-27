@@ -22,10 +22,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.constraint.ConstraintLayout;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.madinnovations.fatlip.Constants;
@@ -43,20 +41,17 @@ import com.madinnovations.fatlip.view.framework.Screen;
 @SuppressWarnings("WeakerAccess")
 public class HomeScreen extends Screen {
 	private ConstraintLayout homeScreenLayout;
-	private Button playButton;
-	private Button helpButton;
-	private Button importOpponentButton;
-	private Button importSceneryButton;
-	private ListView highScoresListview;
+	private Button           playButton;
+	private Button           helpButton;
+	private Button           importOpponentButton;
+	private Button           importSceneryButton;
+	private ListView         highScoresListView;
 
 	@SuppressLint("InflateParams")
 	public HomeScreen(final Game game) {
 		super(game);
-		((GLGame)game).runOnUiThread(() -> {
-			LinearLayout parentLayout = ((GLGame)game).getParentLayout();
-			homeScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater().inflate(R.layout.home_screen,
-					null);
-		});
+		((GLGame)game).runOnUiThread(() -> homeScreenLayout = (ConstraintLayout)((GLGame)game).getLayoutInflater()
+				.inflate(R.layout.home_screen, null));
 	}
 
 	@Override
@@ -90,8 +85,6 @@ public class HomeScreen extends Screen {
 
 	private void initPlayButton() {
 		playButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
-			((GLGame)game).getParentLayout().removeView(homeScreenLayout);
-			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 			game.setScreen(new SetupScreen(game), true);
 			if(Settings.soundEnabled) {
 				Assets.click.play(1);
@@ -101,8 +94,6 @@ public class HomeScreen extends Screen {
 
 	private void initHelpButton() {
 		helpButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
-			((GLGame)game).getParentLayout().removeView(homeScreenLayout);
-			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 			game.setScreen(new HelpScreen(game), true);
 			if(Settings.soundEnabled) {
 				Assets.click.play(1);
@@ -112,8 +103,6 @@ public class HomeScreen extends Screen {
 
 	private void initImportOpponentButton() {
 		importOpponentButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
-			((GLGame)game).getParentLayout().removeView(homeScreenLayout);
-			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 			game.setScreen(new ImportOpponentScreen(game), true);
 			if(Settings.soundEnabled) {
 				Assets.click.play(1);
@@ -123,8 +112,6 @@ public class HomeScreen extends Screen {
 
 	private void initImportSceneryButton() {
 		importSceneryButton.setOnClickListener(view -> ((GLGame)game).runOnUiThread(() -> {
-			((GLGame)game).getParentLayout().removeView(homeScreenLayout);
-			((GLGame)game).getGlView().setVisibility(View.VISIBLE);
 			game.setScreen(new ImportSceneryScreen(game), true);
 			if(Settings.soundEnabled) {
 				Assets.click.play(1);
@@ -147,7 +134,7 @@ public class HomeScreen extends Screen {
 		highScoresArrayAdapter.add(score);
 		score = highScoresPreferences.getInt(Constants.HIGH_SCORE_5, 0);
 		highScoresArrayAdapter.add(score);
-		highScoresListview.setAdapter(highScoresArrayAdapter);
+		highScoresListView.setAdapter(highScoresArrayAdapter);
 	}
 
 	@Override
@@ -162,9 +149,8 @@ public class HomeScreen extends Screen {
 			initImportOpponentButton();
 			importSceneryButton = ((GLGame)game).findViewById(R.id.import_scenery_button);
 			initImportSceneryButton();
-			highScoresListview = ((GLGame)game).findViewById(R.id.high_scores_listview);
+			highScoresListView = ((GLGame)game).findViewById(R.id.high_scores_listview);
 			initHighScoresList();
-			((GLGame)game).getGlView().setVisibility(View.GONE);
 		});
 	}
 

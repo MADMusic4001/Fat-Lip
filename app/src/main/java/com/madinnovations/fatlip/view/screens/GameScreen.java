@@ -19,16 +19,8 @@
 package com.madinnovations.fatlip.view.screens;
 
 import android.graphics.Bitmap;
-import android.graphics.PointF;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-
-import static android.opengl.Matrix.multiplyMM;
-import static android.opengl.Matrix.perspectiveM;
-import static android.opengl.Matrix.setIdentityM;
-import static android.opengl.Matrix.setLookAtM;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,7 +29,6 @@ import com.madinnovations.fatlip.controller.framework.Game;
 import com.madinnovations.fatlip.controller.rxhandlers.OpponentRxHandler;
 import com.madinnovations.fatlip.controller.rxhandlers.SceneryRxHandler;
 import com.madinnovations.fatlip.controller.rxhandlers.WeaponRxHandler;
-import com.madinnovations.fatlip.model.Opponent;
 import com.madinnovations.fatlip.model.SetupInfo;
 import com.madinnovations.fatlip.model.Splash;
 import com.madinnovations.fatlip.view.FatLipApp;
@@ -60,6 +51,10 @@ import io.reactivex.schedulers.Schedulers;
 
 import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glViewport;
+import static android.opengl.Matrix.multiplyMM;
+import static android.opengl.Matrix.perspectiveM;
+import static android.opengl.Matrix.setIdentityM;
+import static android.opengl.Matrix.setLookAtM;
 
 /**
  * Renders the game screen
@@ -194,8 +189,7 @@ public class GameScreen extends Screen {
 			opponentTextureId = TextureHelper.loadTexture(opponentBitmap);
 			if(textureShaderProgram == null) {
 				textureShaderProgram = new TextureShaderProgram((GLGame)game);
-				float[] vertexData = generateOpponentVertexData();
-				glOpponent = new GLOpponent(setupInfo.getOpponent(), vertexData);
+				glOpponent = new GLOpponent(setupInfo.getOpponent(), opponentBitmap);
 			}
 		}
 	}
@@ -258,134 +252,5 @@ public class GameScreen extends Screen {
 						Toast.makeText((GLGame)GameScreen.this.game, R.string.weapon_read_fail, Toast.LENGTH_LONG).show();
 					}
 				});
-	}
-
-	private float[] generateOpponentVertexData() {
-		Opponent opponent = setupInfo.getOpponent();
-		float[] vertexData;
-		boolean hasNose = false;
-		if(opponent.getNose() != null && opponent.getNose().width() > 0 &&
-				opponent.getNose().height() > 0) {
-			vertexData = new float[22*4];
-			hasNose = true;
-		}
-		else {
-			vertexData = new float[18*4];
-		}
-
-		vertexData[0] = -0.1f;
-		vertexData[1] = -0.1f;
-		vertexData[2] = 0f;
-		vertexData[3] = 1f;
-
-		vertexData[4] = -0.1f;
-		vertexData[5] =  0.1f;
-		vertexData[6] = 0f;
-		vertexData[7] = 0f;
-
-		vertexData[8] = 0.1f;
-		vertexData[9] = 0.1f;
-		vertexData[10] = 1f;
-		vertexData[11] = 1f;
-
-		vertexData[12] = 0.1f;
-		vertexData[13] = -0.1f;
-		vertexData[14] = 1f;
-		vertexData[15] = 0f;
-
-		generateVerticesForRect(vertexData, 16, opponentBitmap.getWidth(), opponentBitmap.getHeight(), 0.2f,
-								0.1f, opponent.getLeftEye());
-		generateVerticesForRect(vertexData, 32, opponentBitmap.getWidth(), opponentBitmap.getHeight(), 0.2f,
-								0.1f, opponent.getRightEye());
-		generateVerticesForMouth(vertexData, 48, opponentBitmap.getWidth(), opponentBitmap.getHeight(), 0.2f,
-								0.1f, opponent.getMouth());
-		if(hasNose) {
-			generateVerticesForRect(vertexData, 72, opponentBitmap.getWidth(), opponentBitmap.getHeight(), 0.2f,
-									0.1f, opponent.getNose());
-		}
-
-		return vertexData;
-	}
-
-	private void generateVerticesForRect(float[] vertexData, int destinationOffset, float width, float height, float scale,
-										 float offset, Rect sourceRect) {
-		RectF textureRect = new RectF();
-		RectF modelRect = new RectF();
-		textureRect.left = ((float)sourceRect.left)/width;
-		modelRect.left = textureRect.left * 0.2f - 0.1f;
-		textureRect.right = ((float)sourceRect.right)/width;
-		modelRect.right = textureRect.right * 0.2f - 0.1f;
-		textureRect.bottom = ((float)sourceRect.top)/height;
-		modelRect.top = textureRect.bottom * 0.2f - 0.1f;
-		textureRect.top = ((float)sourceRect.bottom)/height;
-		modelRect.bottom = textureRect.top * 0.2f - 0.1f;
-
-		vertexData[destinationOffset] = modelRect.left;
-		vertexData[destinationOffset+1] = modelRect.top;
-		vertexData[destinationOffset+2] = textureRect.left;
-		vertexData[destinationOffset+3] = textureRect.top;
-
-		vertexData[destinationOffset+4] = modelRect.left;
-		vertexData[destinationOffset+5] = modelRect.bottom;
-		vertexData[destinationOffset+6] = textureRect.left;
-		vertexData[destinationOffset+7] = textureRect.bottom;
-
-		vertexData[destinationOffset+8] = modelRect.right;
-		vertexData[destinationOffset+9] = modelRect.bottom;
-		vertexData[destinationOffset+10] = textureRect.right;
-		vertexData[destinationOffset+11] = textureRect.bottom;
-
-		vertexData[destinationOffset+12] = modelRect.right;
-		vertexData[destinationOffset+13] = modelRect.top;
-		vertexData[destinationOffset+14] = textureRect.right;
-		vertexData[destinationOffset+15] = textureRect.top;
-	}
-
-	private void generateVerticesForMouth(float[] vertexData, int destinationOffset, float width, float height, float scale,
-										 float offset, Rect sourceRect) {
-		RectF textureRect = new RectF();
-		RectF modelRect = new RectF();
-		PointF midTexturePoint = new PointF();
-		PointF midModelPoint = new PointF();
-		textureRect.left = ((float)sourceRect.left)/width;
-		modelRect.left = textureRect.left * 0.2f - 0.1f;
-		textureRect.right = ((float)sourceRect.right)/width;
-		modelRect.right = textureRect.right * 0.2f - 0.1f;
-		textureRect.bottom = ((float)sourceRect.top)/height;
-		modelRect.top = textureRect.bottom * 0.2f - 0.1f;
-		textureRect.top = ((float)sourceRect.bottom)/height;
-		modelRect.bottom = textureRect.top * 0.2f - 0.1f;
-		midTexturePoint.x = (textureRect.right - textureRect.left) / 2.0f;
-		midModelPoint.x = (modelRect.right - modelRect.left) / 2.0f;
-
-		vertexData[destinationOffset] = modelRect.left;
-		vertexData[destinationOffset+1] = modelRect.top;
-		vertexData[destinationOffset+2] = textureRect.left;
-		vertexData[destinationOffset+3] = textureRect.top;
-
-		vertexData[destinationOffset+4] = modelRect.left;
-		vertexData[destinationOffset+5] = modelRect.bottom;
-		vertexData[destinationOffset+6] = textureRect.left;
-		vertexData[destinationOffset+7] = textureRect.bottom;
-
-		vertexData[destinationOffset+8] = modelRect.right;
-		vertexData[destinationOffset+9] = modelRect.bottom;
-		vertexData[destinationOffset+10] = textureRect.right;
-		vertexData[destinationOffset+11] = textureRect.bottom;
-
-		vertexData[destinationOffset+12] = modelRect.right;
-		vertexData[destinationOffset+13] = modelRect.top;
-		vertexData[destinationOffset+14] = textureRect.right;
-		vertexData[destinationOffset+15] = textureRect.top;
-
-		vertexData[destinationOffset+16] = midModelPoint.x;
-		vertexData[destinationOffset+17] = modelRect.top;
-		vertexData[destinationOffset+18] = midTexturePoint.x;
-		vertexData[destinationOffset+19] = textureRect.top;
-
-		vertexData[destinationOffset+20] = midModelPoint.x;
-		vertexData[destinationOffset+21] = modelRect.bottom;
-		vertexData[destinationOffset+22] = midTexturePoint.x;
-		vertexData[destinationOffset+23] = textureRect.bottom;
 	}
 }
